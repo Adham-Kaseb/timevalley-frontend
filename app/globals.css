@@ -1,0 +1,265 @@
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+@import "tailwindcss";
+
+/* Keyframe Animations */
+
+@layer base {
+  :root {
+    --bg-canvas: #FAF0E9;
+    --bg-card: #FFFFFF;
+    
+    --color-teal: #0E6875;
+    --color-teal-dark: #0B4E58;
+    --color-teal-light: #E6F3F5;
+    
+    --color-peach: #EDA296;
+    --color-peach-dark: #E08577;
+    --color-peach-light: #FDEEE9;
+
+    --color-text-main: #1C2B2D;
+    --color-text-muted: #64748B;
+    --color-border: #E2E8F0;
+  }
+
+  html {
+    font-size: 112.5%; /* Scaled up root typography baseline (18px) for optimal clarity */
+    direction: ltr;
+    font-family: 'Tajawal', var(--font-tajawal), sans-serif;
+  }
+
+  body {
+    background-color: var(--bg-canvas);
+    color: var(--color-text-main);
+    font-family: 'Tajawal', var(--font-tajawal), sans-serif;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  *, button, input, select, textarea {
+    font-family: 'Tajawal', var(--font-tajawal), sans-serif;
+  }
+}
+
+/* Lenis Smooth Scroll Recommended Rules */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Card Styling */
+.card-white {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s ease;
+}
+
+.card-white:hover {
+  box-shadow: 0 10px 30px rgba(14, 104, 117, 0.08);
+  border-color: rgba(14, 104, 117, 0.2);
+}
+
+/* Arch Shaped Image Frame */
+.arch-frame {
+  border-radius: 140px 140px 24px 24px;
+  overflow: hidden;
+}
+
+/* Modal Slide & Scale Animations */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes slideFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-modal-pop {
+  animation: modalFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-right {
+  animation: slideFromRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-left {
+  animation: slideFromLeft 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Custom Cursor & Spinner Styles */
+/* Hide custom cursor on mobile, tablet & touch devices */
+@media (max-width: 1023px), (pointer: coarse) {
+  .cursor-dot,
+  .cursor-follower {
+    display: none !important;
+  }
+}
+
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background-color: #0E6875;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999999;
+  transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
+}
+
+.cursor-follower {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(14, 104, 117, 0.2);
+  box-shadow: 0 4px 20px rgba(14, 104, 117, 0.12);
+  transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
+}
+
+.cursor-spinner-svg {
+  width: 100%;
+  height: 100%;
+  transform-origin: center center;
+}
+
+.cursor-spinner-bg {
+  stroke: rgba(14, 104, 117, 0.2);
+}
+
+.cursor-spinner-arc {
+  stroke: #0E6875;
+  stroke-linecap: round;
+  transform-origin: center center;
+  transition: stroke 0.2s ease;
+}
+
+/* Spinner Animation Triggers ONLY when Focusing / Hovering Interactive Elements */
+.cursor-follower.is-hovering {
+  width: 56px;
+  height: 56px;
+  background: rgba(237, 162, 150, 0.18);
+  border-color: #EDA296;
+  box-shadow: 0 0 25px rgba(237, 162, 150, 0.4);
+  animation: cursorPulseGlow 1.8s ease-in-out infinite;
+}
+
+.cursor-follower.is-hovering .cursor-spinner-svg {
+  animation: cursorSpin 1.2s linear infinite;
+}
+
+.cursor-follower.is-hovering .cursor-spinner-arc {
+  stroke: #EDA296;
+  animation: cursorDash 1.5s ease-in-out infinite;
+}
+
+.cursor-dot.is-hovering {
+  width: 12px;
+  height: 12px;
+  background-color: #EDA296;
+  box-shadow: 0 0 12px #EDA296;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF0E9;
+}
+::-webkit-scrollbar-thumb {
+  background: #0E6875;
+  border-radius: 4px;
+}
+
+/* Route Page Entrance & Interactive Component Fade Load Transitions */
+@keyframes pageFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeLoadIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.page-transition-wrapper {
+  animation: pageFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+
+.fade-load-transition {
+  animation: fadeLoadIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+
+/* Hide scrollbar for clean horizontal swipe on mobile/tablet */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
