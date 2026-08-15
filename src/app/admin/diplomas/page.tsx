@@ -6,6 +6,7 @@ import apiClient from "@/lib/axios";
 import adminService from "@/services/admin";
 import ModuleFormModal from "@/components/admin/ModuleFormModal";
 import LessonFormModal from "@/components/admin/LessonFormModal";
+import CouponManagerModal from "@/components/admin/CouponManagerModal";
 
 interface Lesson {
   id: string;
@@ -38,6 +39,8 @@ export default function DiplomaBuilderPage() {
   const [isLessonModalOpen, setIsLessonModalOpen] = useState(false);
   const [targetModuleId, setTargetModuleId] = useState<string>("");
   const [lessonToEdit, setLessonToEdit] = useState<Lesson | null>(null);
+
+  const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
 
   useEffect(() => {
     fetchCurriculum();
@@ -132,7 +135,15 @@ export default function DiplomaBuilderPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3 self-start sm:self-auto">
+        <div className="flex items-center gap-3 self-start sm:self-auto flex-wrap">
+          <button
+            onClick={() => setIsCouponModalOpen(true)}
+            className="bg-[#EDA296] hover:bg-[#e28d80] text-white font-extrabold text-xs px-4 py-3 rounded-2xl shadow-md transition-all flex items-center gap-2 cursor-pointer"
+          >
+            <i className="fa-solid fa-ticket text-sm"></i>
+            <span>+ Create Coupon</span>
+          </button>
+
           <Link
             href="/diplomas"
             target="_blank"
@@ -317,6 +328,11 @@ export default function DiplomaBuilderPage() {
         onClose={() => setIsLessonModalOpen(false)}
         onSuccess={fetchCurriculum}
         lessonToEdit={lessonToEdit}
+      />
+
+      <CouponManagerModal
+        isOpen={isCouponModalOpen}
+        onClose={() => setIsCouponModalOpen(false)}
       />
     </div>
   );

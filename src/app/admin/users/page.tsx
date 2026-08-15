@@ -6,7 +6,10 @@ import apiClient from "@/lib/axios";
 import CreateUserModal from "@/components/admin/CreateUserModal";
 import StudentManageDrawer from "@/components/admin/StudentManageDrawer";
 
+import { useAuth } from "@/context/AuthContext";
+
 export default function UsersManagementDashboard() {
+  const { isLoggedIn, isAuthLoading } = useAuth();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [modules, setModules] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,24 +24,31 @@ export default function UsersManagementDashboard() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   useEffect(() => {
-    fetchInitialData();
-  }, []);
+    if (!isAuthLoading && isLoggedIn) {
+      fetchInitialData();
+    } else if (!isAuthLoading && !isLoggedIn) {
+      setLoading(false);
+    }
+  }, [isAuthLoading, isLoggedIn]);
 
   const fetchInitialData = async () => {
     setLoading(true);
     try {
       const [usersData, curriculumRes] = await Promise.all([
-        adminService.listUsers(),
-        apiClient.get("/courses/diploma"),
+        adminService.listUsers().catch((err) => {
+          if (err?.response?.status === 401) return [];
+          throw err;
+        }),
+        apiClient.get("/courses/diploma").catch(() => ({ data: { modules: [] } })),
       ]);
 
       // Filter out SUPER_ADMIN
-      const filteredUsers = usersData.filter(
+      const filteredUsers = (usersData || []).filter(
         (u) => u.role !== "SUPER_ADMIN" && u.email !== "adhamkasebssj4@gmail.com"
       );
       setUsers(filteredUsers);
 
-      if (curriculumRes.data && curriculumRes.data.modules) {
+      if (curriculumRes?.data?.modules) {
         setModules(curriculumRes.data.modules);
       }
     } catch (err) {

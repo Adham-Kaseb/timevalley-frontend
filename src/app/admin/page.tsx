@@ -7,7 +7,7 @@ import adminService, { AdminUser } from "@/services/admin";
 import { getSocket } from "@/services/socket";
 
 export default function AdminOverviewPage() {
-  const { user } = useAuth();
+  const { user, isLoggedIn, isAuthLoading } = useAuth();
   const [usersList, setUsersList] = useState<AdminUser[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
@@ -24,7 +24,11 @@ export default function AdminOverviewPage() {
   ];
 
   useEffect(() => {
-    fetchUsers();
+    if (!isAuthLoading && isLoggedIn) {
+      fetchUsers();
+    } else if (!isAuthLoading && !isLoggedIn) {
+      setLoadingUsers(false);
+    }
 
     const socket = getSocket();
     socket.on("diploma_access_updated", fetchUsers);
@@ -32,16 +36,22 @@ export default function AdminOverviewPage() {
     return () => {
       socket.off("diploma_access_updated", fetchUsers);
     };
-  }, []);
+  }, [isAuthLoading, isLoggedIn]);
 
   const fetchUsers = async () => {
     setLoadingUsers(true);
     try {
       const data = await adminService.listUsers();
-      const filtered = data.filter((u) => u.role !== "SUPER_ADMIN" && u.email !== "adhamkasebssj4@gmail.com");
-      setUsersList(filtered);
-    } catch (err) {
-      console.error("Failed to load users for admin:", err);
+      if (Array.isArray(data)) {
+        const filtered = data.filter((u) => u.role !== "SUPER_ADMIN" && u.email !== "adhamkasebssj4@gmail.com");
+        setUsersList(filtered);
+      }
+    } catch (err: any) {
+      if (err?.response?.status === 401) {
+        console.warn("Unauthorized access attempt to admin user list.");
+      } else {
+        console.error("Failed to load users for admin:", err);
+      }
     } finally {
       setLoadingUsers(false);
     }

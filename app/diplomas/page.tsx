@@ -431,7 +431,9 @@ export default function DiplomasPage() {
     if (!isLoggedIn) {
       openEnrollModal("signin");
     } else {
-      setIsPurchaseModalOpen(true);
+      if (typeof window !== "undefined") {
+        window.location.href = "/checkout/diploma";
+      }
     }
   };
 
