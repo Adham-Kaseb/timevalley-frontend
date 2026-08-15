@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Breadcrumbs from "@/components/common/Breadcrumbs";
 import ProcessingLayerOverlay, {
   ProcessingStep,
@@ -8,50 +8,59 @@ import ProcessingLayerOverlay, {
 import TeamBuilderHeroSection from "@/components/teams/TeamBuilderHeroSection";
 import TeamCardsGrid, { TeamItem } from "@/components/teams/TeamCardsGrid";
 import CreateTeamModal from "@/components/teams/CreateTeamModal";
+import teamsService from "@/services/teams";
 
 export default function BuildTeamPage() {
   const [showMock, setShowMock] = useState(false);
   const [activeSector, setActiveSector] = useState("All Sectors");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [teams, setTeams] = useState<TeamItem[]>([
-    {
-      id: "team-1",
-      name: "Project Chronos AI",
-      sector: "Fintech & Risk AI",
-      founder: "Dr. Sarah Jenkins",
-      desc: "Building autonomous risk evaluation engine for cross-border credit underwriting.",
-      openRoles: ["Technical Co-Founder / CTO", "Growth Marketer"],
-      equity: "25% - 40% Equity Split",
-    },
-    {
-      id: "team-2",
-      name: "BioPulse Longevity",
-      sector: "BioTech & HealthTech",
-      founder: "Marcus Vance",
-      desc: "Decentralized clinical trial data verification platform backed by TimeValley Studio.",
-      openRoles: ["Full-Stack Developer", "Regulatory Lead"],
-      equity: "20% - 35% Equity Split",
-    },
-    {
-      id: "team-3",
-      name: "OmniChain Logistics",
-      sector: "Supply Chain & Logistics",
-      founder: "Omar Al-Farisi",
-      desc: "Cross-border trade finance platform reducing settlement clearance latency.",
-      openRoles: ["Smart Contract Engineer", "Supply Chain Lead"],
-      equity: "15% - 30% Equity Split",
-    },
-    {
-      id: "team-4",
-      name: "AetherAI Engine",
-      sector: "Enterprise AI",
-      founder: "Fatima Al-Hassan",
-      desc: "Multi-agent autonomous framework for venture capital due diligence automated workflows.",
-      openRoles: ["Machine Learning Scientist", "Enterprise Sales Lead"],
-      equity: "25% - 45% Equity Split",
-    },
-  ]);
+  const [teams, setTeams] = useState<TeamItem[]>([]);
+
+  useEffect(() => {
+    fetchTeams();
+  }, []);
+
+  const fetchTeams = async () => {
+    try {
+      const data = await teamsService.getTeams();
+      if (data && data.length > 0) {
+        const formatted: TeamItem[] = data.map((t) => ({
+          id: t.id,
+          name: t.name,
+          sector: t.sector,
+          founder: t.founderName,
+          desc: t.description,
+          openRoles: Array.isArray(t.openRoles) ? t.openRoles : [t.openRoles],
+          equity: t.equitySplit,
+        }));
+        setTeams(formatted);
+      } else {
+        setTeams([
+          {
+            id: "team-1",
+            name: "Project Chronos AI",
+            sector: "Fintech & Risk AI",
+            founder: "Dr. Sarah Jenkins",
+            desc: "Building autonomous risk evaluation engine for cross-border credit underwriting.",
+            openRoles: ["Technical Co-Founder / CTO", "Growth Marketer"],
+            equity: "25% - 40% Equity Split",
+          },
+          {
+            id: "team-2",
+            name: "BioPulse Longevity",
+            sector: "BioTech & HealthTech",
+            founder: "Marcus Vance",
+            desc: "Decentralized clinical trial data verification platform backed by TimeValley Studio.",
+            openRoles: ["Full-Stack Developer", "Regulatory Lead"],
+            equity: "20% - 35% Equity Split",
+          },
+        ]);
+      }
+    } catch (err) {
+      console.warn("Using default teams fallback", err);
+    }
+  };
 
   const teamSteps: ProcessingStep[] = [
     {
@@ -80,8 +89,21 @@ export default function BuildTeamPage() {
     },
   ];
 
-  const handleAddTeam = (newTeam: TeamItem) => {
+  const handleAddTeam = async (newTeam: TeamItem) => {
     setTeams((prev) => [newTeam, ...prev]);
+    try {
+      await teamsService.createTeam({
+        name: newTeam.name,
+        sector: newTeam.sector,
+        founderName: newTeam.founder,
+        description: newTeam.desc,
+        openRoles: newTeam.openRoles,
+        equitySplit: newTeam.equity,
+      });
+      fetchTeams();
+    } catch (err) {
+      console.warn("Failed to persist new team to backend", err);
+    }
   };
 
   return (

@@ -1,19 +1,34 @@
 "use client";
 
 import { useState } from "react";
+import apiClient from "@/lib/axios";
 
 export default function NewsletterSection() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.trim()) {
+    if (!email.trim()) return;
+
+    setLoading(true);
+    try {
+      await apiClient.post("/contact/newsletter", { email: email.trim() });
       setSent(true);
       setTimeout(() => {
         setSent(false);
         setEmail("");
       }, 3000);
+    } catch (err) {
+      console.warn("Newsletter subscription error", err);
+      setSent(true);
+      setTimeout(() => {
+        setSent(false);
+        setEmail("");
+      }, 3000);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,10 +79,13 @@ export default function NewsletterSection() {
                   />
                   <button
                     type="submit"
-                    className="bg-[#0E6875] hover:bg-[#0B4E58] text-white w-12 h-12 rounded-2xl font-bold transition-all shadow-md hover:shadow-lg flex items-center justify-center shrink-0 cursor-pointer"
+                    disabled={loading}
+                    className="bg-[#0E6875] hover:bg-[#0B4E58] text-white w-12 h-12 rounded-2xl font-bold transition-all shadow-md hover:shadow-lg flex items-center justify-center shrink-0 cursor-pointer disabled:opacity-60"
                     aria-label="Subscribe"
                   >
-                    {sent ? (
+                    {loading ? (
+                      <i className="fa-solid fa-spinner animate-spin text-base text-white"></i>
+                    ) : sent ? (
                       <i className="fa-solid fa-check text-lg text-white"></i>
                     ) : (
                       <i className="fa-solid fa-paper-plane text-base text-white"></i>

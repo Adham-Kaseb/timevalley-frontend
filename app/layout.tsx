@@ -3,6 +3,7 @@ import { Tajawal } from "next/font/google";
 import "./globals.css";
 import ConditionalLayout from "@/components/layout/ConditionalLayout";
 import CustomCursor from "@/components/common/CustomCursor";
+import CustomContextMenu from "@/components/common/CustomContextMenu";
 import SmoothScrollProvider from "@/components/common/SmoothScrollProvider";
 
 import { AuthProvider } from "@/context/AuthContext";
@@ -46,6 +47,9 @@ export default function RootLayout({
           <SmoothScrollProvider>
             {/* Global Interactive Custom Cursor */}
             <CustomCursor />
+
+            {/* Global 1-Second Right-Click Navigation Menu */}
+            <CustomContextMenu />
 
             {/* Conditional Public Header/Footer vs Admin Fullscreen */}
             <ConditionalLayout>{children}</ConditionalLayout>

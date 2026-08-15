@@ -96,7 +96,7 @@ export default function AdminOverviewPage() {
       </div>
 
       {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white p-6 rounded-3xl shadow-lg border border-gray-200/80 flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-teal-50 text-[#0E6875] flex items-center justify-center text-2xl font-bold border border-[#0E6875]/20">
             <i className="fa-solid fa-users"></i>
@@ -124,16 +124,6 @@ export default function AdminOverviewPage() {
           <div>
             <div className="text-xs font-bold text-gray-500">Total Diploma Revenue</div>
             <div className="text-2xl font-black text-emerald-600">{totalRevenue.toLocaleString()} LE</div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-3xl shadow-lg border border-gray-200/80 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl font-bold border border-blue-500/20">
-            <i className="fa-solid fa-layer-group"></i>
-          </div>
-          <div>
-            <div className="text-xs font-bold text-gray-500">Active Diploma Modules</div>
-            <div className="text-2xl font-black text-[#1C2B2D]">8 Modules</div>
           </div>
         </div>
       </div>

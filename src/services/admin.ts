@@ -135,6 +135,19 @@ export const adminService = {
   },
 
   /**
+   * Unlock or revoke a specific lesson/section for a student
+   */
+  async unlockLesson(userId: string, lessonId: string, unlock: boolean, notes?: string) {
+    const response = await apiClient.post('/users/admin/unlock-lesson', {
+      userId,
+      lessonId,
+      unlock,
+      notes,
+    });
+    return response.data;
+  },
+
+  /**
    * Send custom diploma assignment or playbook content to a student
    */
   async assignContent(payload: { userId: string; title: string; description: string; attachmentUrl?: string; dueDate?: string }) {

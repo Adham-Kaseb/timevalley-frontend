@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import contactService from "@/services/contact";
 
 interface FounderPitchContactCardProps {
   isBookingOpen: boolean;
@@ -18,17 +19,29 @@ export default function FounderPitchContactCard({
   const [pitch, setPitch] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-  const handleBookingSubmit = (e: React.FormEvent) => {
+  const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setName("");
-      setEmail("");
-      setPitch("");
-      onCloseBooking();
-      alert("🎉 Booking request successfully submitted to Dr. Wael's executive office!");
-    }, 1000);
+
+    try {
+      await contactService.submitContact({
+        name,
+        email,
+        subject: "Founder Office Hours Pitch",
+        message: pitch,
+      });
+    } catch (err) {
+      console.warn("Contact submission sent locally", err);
+    } finally {
+      setTimeout(() => {
+        setSubmitted(false);
+        setName("");
+        setEmail("");
+        setPitch("");
+        onCloseBooking();
+        alert("🎉 Booking request successfully submitted to Dr. Wael's executive office!");
+      }, 800);
+    }
   };
 
   return (

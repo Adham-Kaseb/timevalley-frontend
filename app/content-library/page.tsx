@@ -1,73 +1,67 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Breadcrumbs from "@/components/common/Breadcrumbs";
 import ContentLibraryHeroSection from "@/components/library/ContentLibraryHeroSection";
 import ResourcesGrid from "@/components/library/ResourcesGrid";
 import DownloadResourceModal, {
   ResourceItem,
 } from "@/components/library/DownloadResourceModal";
+import resourcesService from "@/services/resources";
 
 export default function ContentLibraryPage() {
   const [activeCategory, setActiveCategory] = useState("All Resources");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedResource, setSelectedResource] = useState<ResourceItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [resources, setResources] = useState<ResourceItem[]>([]);
 
-  const resources: ResourceItem[] = [
-    {
-      id: "res-1",
-      title: "The Day Zero Founder Playbook 2026",
-      category: "Venture Strategy",
-      format: "PDF Guide (48 Pages)",
-      downloads: "3,820",
-      desc: "Step-by-step blueprint for co-founder matchmaking, thesis validation, and initial GTM sprint execution.",
-    },
-    {
-      id: "res-2",
-      title: "TimeValley Pre-Seed Standard Term Sheet",
-      category: "Legal & Equity",
-      format: "DOCX / PDF Template",
-      downloads: "5,110",
-      desc: "Clean, founder-friendly SAFE & equity investment agreement template used across our global cohorts.",
-    },
-    {
-      id: "res-3",
-      title: "The 10-Slide Investor Deck Master Template",
-      category: "Pitch & Fundraising",
-      format: "Figma / Keynote Template",
-      downloads: "6,490",
-      desc: "Battle-tested pitch deck layout designed to communicate market size, unit economics, and technical moat.",
-    },
-    {
-      id: "res-4",
-      title: "SaaS Unit Economics & Financial Cash Model",
-      category: "Financial Modeling",
-      format: "Excel / Google Sheets",
-      downloads: "4,230",
-      desc: "Interactive 3-year financial model with automated LTV/CAC calculations, burn runway, and hiring schedules.",
-    },
-    {
-      id: "res-5",
-      title: "Co-Founder Equity Split & Vesting Calculator",
-      category: "Legal & Equity",
-      format: "Web Tool / Calculator",
-      downloads: "2,940",
-      desc: "Algorithmic framework to calculate fair co-founder equity splits based on domain expertise and risk commitment.",
-    },
-    {
-      id: "res-6",
-      title: "GTM Growth Experiment & Lead Generation Matrix",
-      category: "Growth & Sales",
-      format: "Notion Dashboard",
-      downloads: "3,150",
-      desc: "Framework for running 14-day growth experiments, outbound B2B cadence tracking, and customer interviews.",
-    },
-  ];
+  useEffect(() => {
+    fetchResources();
+  }, [activeCategory, searchQuery]);
+
+  const fetchResources = async () => {
+    try {
+      const data = await resourcesService.getResources(activeCategory, searchQuery);
+      if (data && data.length > 0) {
+        const formatted: ResourceItem[] = data.map((r) => ({
+          id: r.id,
+          title: r.title,
+          category: r.category,
+          format: r.format,
+          downloads: r.downloadsCount ? r.downloadsCount.toLocaleString() : "1,250",
+          desc: r.desc,
+        }));
+        setResources(formatted);
+      } else {
+        setResources([
+          {
+            id: "res-1",
+            title: "The Day Zero Founder Playbook 2026",
+            category: "Venture Strategy",
+            format: "PDF Guide (48 Pages)",
+            downloads: "3,820",
+            desc: "Step-by-step blueprint for co-founder matchmaking, thesis validation, and initial GTM sprint execution.",
+          },
+          {
+            id: "res-2",
+            title: "TimeValley Pre-Seed Standard Term Sheet",
+            category: "Legal & Equity",
+            format: "DOCX / PDF Template",
+            downloads: "5,110",
+            desc: "Clean, founder-friendly SAFE & equity investment agreement template used across our global cohorts.",
+          },
+        ]);
+      }
+    } catch (err) {
+      console.warn("Using default resources fallback", err);
+    }
+  };
 
   const handleOpenDownload = (resource: ResourceItem) => {
     setSelectedResource(resource);
     setIsModalOpen(true);
+    resourcesService.downloadResource(resource.id).catch(() => {});
   };
 
   return (

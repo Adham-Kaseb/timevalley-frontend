@@ -34,6 +34,7 @@ export default function StudentManageDrawer({
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [isTogglingEnrollment, setIsTogglingEnrollment] = useState(false);
   const [togglingModuleId, setTogglingModuleId] = useState<string | null>(null);
+  const [expandedModuleId, setExpandedModuleId] = useState<string | null>(null);
 
   // Custom Assignment Form State
   const [taskTitle, setTaskTitle] = useState("");
@@ -71,6 +72,8 @@ export default function StudentManageDrawer({
   );
   const unlockedModuleIds =
     studentDetail?.unlockedModules?.flatMap((u: any) => [u.moduleId, u.module?.id, u.module?.moduleNumber].filter(Boolean)) || [];
+  const unlockedLessonIds =
+    studentDetail?.unlockedLessons?.flatMap((u: any) => [u.lessonId, u.lesson?.id].filter(Boolean)) || [];
 
   const handleToggleEnrollment = async () => {
     setActionMsg("");
@@ -118,6 +121,29 @@ export default function StudentManageDrawer({
       loadStudentDetail(student.id);
     } finally {
       setTogglingModuleId(null);
+    }
+  };
+
+  const handleToggleLessonUnlock = async (lessonId: string) => {
+    if (!student) return;
+    setActionMsg("");
+    const currentlyUnlocked = unlockedLessonIds.includes(lessonId);
+    try {
+      const updatedDetail = await adminService.unlockLesson(student.id, lessonId, !currentlyUnlocked);
+      if (updatedDetail && updatedDetail.id) {
+        setStudentDetail(updatedDetail);
+      }
+      setActionMsg(
+        !currentlyUnlocked
+          ? `Specific Section / Lesson access granted successfully!`
+          : `Specific Section / Lesson access revoked.`
+      );
+      await loadStudentDetail(student.id);
+      onRefresh();
+    } catch (err) {
+      console.error("Failed to toggle lesson unlock:", err);
+      setActionMsg("Failed to update lesson unlock.");
+      loadStudentDetail(student.id);
     }
   };
 
@@ -307,8 +333,13 @@ export default function StudentManageDrawer({
                       if (!id) return false;
                       const idStr = String(id).toLowerCase().trim();
                       const mIdStr = String(m.id).toLowerCase().trim();
-                      const mNumStr = String(m.moduleNumber).toLowerCase().trim();
-                      return idStr === mIdStr || idStr === mNumStr || idStr.includes(mNumStr) || (mNumStr.length > 0 && idStr.endsWith(mNumStr));
+                      const mNumStr = String(m.moduleNumber || "").toLowerCase().trim();
+
+                      if (idStr === mIdStr || idStr === mNumStr) return true;
+
+                      const idClean = idStr.replace(/^m|^0+/, '');
+                      const numClean = mNumStr.replace(/^m|^0+/, '');
+                      return idClean.length > 0 && numClean.length > 0 && idClean === numClean;
                     });
                     const isModuleLoading = togglingModuleId === m.id;
 

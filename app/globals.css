@@ -263,3 +263,24 @@ html.lenis, html.lenis body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Context Menu Custom Scrollbar */
+.menu-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(45, 212, 191, 0.4) rgba(255, 255, 255, 0.05);
+}
+.menu-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.menu-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+}
+.menu-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(45, 212, 191, 0.4);
+  border-radius: 6px;
+}
+.menu-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(237, 162, 150, 0.8);
+}
+
