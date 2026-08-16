@@ -9,10 +9,6 @@ interface FounderHeroSpotlightProps {
 export default function FounderHeroSpotlight({
   onOpenBookingModal,
 }: FounderHeroSpotlightProps) {
-  const handleLinkedIn = () => {
-    alert("Connecting with Dr. Wael on LinkedIn...");
-  };
-
   return (
     <section className="mb-12 bg-white border border-gray-200 rounded-3xl p-6 sm:p-10 shadow-sm relative overflow-hidden">
       {/* Background Subtle Gradient Glow */}
@@ -74,13 +70,15 @@ export default function FounderHeroSpotlight({
               <span>Book Founder Office Hours</span>
             </button>
 
-            <button
-              onClick={handleLinkedIn}
+            <a
+              href="https://www.linkedin.com/in/wael-tawfeek?utm_source=share_via&utm_content=profile&utm_medium=member_android"
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-full sm:w-auto px-6 py-3.5 rounded-xl border border-gray-300 hover:border-[#0E6875] text-gray-700 hover:text-[#0E6875] font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 cursor-pointer bg-white"
             >
               <i className="fa-brands fa-linkedin text-lg text-[#0A66C2]"></i>
               <span>Connect LinkedIn</span>
-            </button>
+            </a>
           </div>
         </div>
 

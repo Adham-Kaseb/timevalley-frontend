@@ -157,6 +157,14 @@ export default function Navbar() {
                   Founder: Dr. Wael
                 </Link>
                 <Link
+                  href="/consultations"
+                  onClick={() => setDropdownOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-gray-700 hover:bg-[#FAF0E9] hover:text-[#0E6875]"
+                >
+                  <i className="fa-solid fa-user-doctor text-[#0E6875] w-4"></i>{" "}
+                  Consultations
+                </Link>
+                <Link
                   href="/events"
                   onClick={() => setDropdownOpen(false)}
                   className="flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-gray-700 hover:bg-[#FAF0E9] hover:text-[#0E6875]"
@@ -337,6 +345,15 @@ export default function Navbar() {
             }`}
           >
             <span>Build Team</span>
+            <i className="fa-solid fa-chevron-right text-xs text-gray-300"></i>
+          </Link>
+
+          <Link
+            href="/consultations"
+            onClick={() => setMobileOpen(false)}
+            className="py-1 transition-all flex items-center justify-between hover:text-[#0E6875]"
+          >
+            <span>Consultations</span>
             <i className="fa-solid fa-chevron-right text-xs text-gray-300"></i>
           </Link>
 

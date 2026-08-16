@@ -32,14 +32,23 @@ export default function TopBar() {
           <div className="w-px h-4 bg-white/25 hidden lg:block"></div>
 
           <div className="flex items-center gap-2 shrink-0">
-            <a href="#" className="w-7 h-7 rounded-full bg-white/10 hover:bg-[#EDA296] flex items-center justify-center text-white text-xs transition-all hover:-translate-y-0.5" title="LinkedIn">
+            <a
+              href="https://www.facebook.com/share/1CGdSXTAKq/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-7 h-7 rounded-full bg-white/10 hover:bg-[#EDA296] flex items-center justify-center text-white text-xs transition-all hover:-translate-y-0.5"
+              title="Facebook"
+            >
+              <i className="fa-brands fa-facebook-f"></i>
+            </a>
+            <a
+              href="https://www.linkedin.com/in/wael-tawfeek?utm_source=share_via&utm_content=profile&utm_medium=member_android"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-7 h-7 rounded-full bg-white/10 hover:bg-[#EDA296] flex items-center justify-center text-white text-xs transition-all hover:-translate-y-0.5"
+              title="LinkedIn"
+            >
               <i className="fa-brands fa-linkedin-in"></i>
-            </a>
-            <a href="#" className="w-7 h-7 rounded-full bg-white/10 hover:bg-[#EDA296] flex items-center justify-center text-white text-xs transition-all hover:-translate-y-0.5" title="Twitter">
-              <i className="fa-brands fa-x-twitter"></i>
-            </a>
-            <a href="#" className="w-7 h-7 rounded-full bg-white/10 hover:bg-[#EDA296] flex items-center justify-center text-white text-xs transition-all hover:-translate-y-0.5" title="YouTube">
-              <i className="fa-brands fa-youtube"></i>
             </a>
           </div>
         </div>

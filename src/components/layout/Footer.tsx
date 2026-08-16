@@ -27,32 +27,22 @@ export default function Footer() {
             {/* Social Media Links */}
             <div className="flex items-center gap-3 pt-2">
               <a
-                href="#"
+                href="https://www.facebook.com/share/1CGdSXTAKq/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-9 h-9 rounded-xl bg-white border border-gray-200 text-[#0E6875] flex items-center justify-center font-bold text-xs hover:bg-[#0E6875] hover:text-white hover:border-[#0E6875] transition-all shadow-2xs"
                 title="Facebook"
               >
                 <i className="fa-brands fa-facebook-f"></i>
               </a>
               <a
-                href="#"
-                className="w-9 h-9 rounded-xl bg-white border border-gray-200 text-[#0E6875] flex items-center justify-center font-bold text-xs hover:bg-[#0E6875] hover:text-white hover:border-[#0E6875] transition-all shadow-2xs"
-                title="Twitter"
-              >
-                <i className="fa-brands fa-x-twitter"></i>
-              </a>
-              <a
-                href="#"
+                href="https://www.linkedin.com/in/wael-tawfeek?utm_source=share_via&utm_content=profile&utm_medium=member_android"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-9 h-9 rounded-xl bg-white border border-gray-200 text-[#0E6875] flex items-center justify-center font-bold text-xs hover:bg-[#0E6875] hover:text-white hover:border-[#0E6875] transition-all shadow-2xs"
                 title="LinkedIn"
               >
                 <i className="fa-brands fa-linkedin-in"></i>
-              </a>
-              <a
-                href="#"
-                className="w-9 h-9 rounded-xl bg-white border border-gray-200 text-[#0E6875] flex items-center justify-center font-bold text-xs hover:bg-[#0E6875] hover:text-white hover:border-[#0E6875] transition-all shadow-2xs"
-                title="Instagram"
-              >
-                <i className="fa-brands fa-instagram"></i>
               </a>
             </div>
           </div>
@@ -97,7 +87,15 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="#about"
+                  href="/consultations"
+                  className="hover:text-[#0E6875] transition-colors"
+                >
+                  Consultations
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/about"
                   className="hover:text-[#0E6875] transition-colors"
                 >
                   About Us

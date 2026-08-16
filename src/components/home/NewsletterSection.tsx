@@ -96,21 +96,18 @@ export default function NewsletterSection() {
                 {/* Social Buttons */}
                 <div className="flex items-center gap-3 pt-1">
                   <a
-                    href="#"
+                    href="https://www.facebook.com/share/1CGdSXTAKq/"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="w-10 h-10 rounded-xl bg-[#0E6875] text-white flex items-center justify-center font-bold text-sm hover:bg-[#0B4E58] transition-all shadow-xs"
                     title="Facebook"
                   >
                     <i className="fa-brands fa-facebook-f"></i>
                   </a>
                   <a
-                    href="#"
-                    className="w-10 h-10 rounded-xl bg-[#0E6875] text-white flex items-center justify-center font-bold text-sm hover:bg-[#0B4E58] transition-all shadow-xs"
-                    title="Twitter"
-                  >
-                    <i className="fa-brands fa-x-twitter"></i>
-                  </a>
-                  <a
-                    href="#"
+                    href="https://www.linkedin.com/in/wael-tawfeek?utm_source=share_via&utm_content=profile&utm_medium=member_android"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="w-10 h-10 rounded-xl bg-[#0E6875] text-white flex items-center justify-center font-bold text-sm hover:bg-[#0B4E58] transition-all shadow-xs"
                     title="LinkedIn"
                   >

@@ -25,6 +25,11 @@ export default function AdminSidebar() {
       icon: "fa-solid fa-graduation-cap",
     },
     {
+      label: "Consultations Builder",
+      href: "/admin/consultations",
+      icon: "fa-solid fa-user-doctor",
+    },
+    {
       label: "Sub-Admin Permissions",
       href: "/admin#permissions",
       icon: "fa-solid fa-user-shield",
