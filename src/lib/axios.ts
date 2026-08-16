@@ -30,7 +30,7 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.code === 'ERR_NETWORK' || !error.response) {
-      console.error('API Network Error: Cannot reach backend server at', API_BASE_URL);
+      console.warn('API Network Warning: Cannot reach backend server at', API_BASE_URL);
     }
     return Promise.reject(error);
   }

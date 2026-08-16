@@ -97,8 +97,18 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-gray-200/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500 font-medium">
-          <p>© 2026 TimeValley Consulting. All rights reserved.</p>
-          
+          <div className="flex flex-wrap items-center gap-4">
+            <p>© 2026 TimeValley Consulting. All rights reserved.</p>
+            <span className="hidden sm:inline text-gray-300">•</span>
+            <Link href="/terms" className="hover:text-[#0E6875] font-semibold transition-colors">
+              Terms of Service
+            </Link>
+            <span className="text-gray-300">•</span>
+            <Link href="/privacy" className="hover:text-[#0E6875] font-semibold transition-colors">
+              Privacy Policy
+            </Link>
+          </div>
+
           <div className="flex items-center gap-2 bg-[#E6F3F5] text-[#0E6875] px-3.5 py-1.5 rounded-full font-extrabold text-xs border border-[#0E6875]/20 shadow-2xs">
             <i className="fa-solid fa-shield-halved text-xs"></i>
             <span>TimeValley Brand System Active</span>

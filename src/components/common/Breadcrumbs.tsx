@@ -34,6 +34,10 @@ export default function Breadcrumbs({ customItems }: BreadcrumbsProps) {
     "content-library": "Content Library",
     community: "Ecosystem Community",
     about: "About Us",
+    register: "Student Registration",
+    login: "Student Sign In",
+    terms: "Terms of Service",
+    privacy: "Privacy Policy",
   };
 
   const items: BreadcrumbItem[] = customItems || [

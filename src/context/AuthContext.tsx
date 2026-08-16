@@ -102,7 +102,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         }
       } catch (e) {
-        console.error("Failed to load user session", e);
+        console.warn("Failed to load user session", e);
       } finally {
         setIsAuthLoading(false);
       }
@@ -184,8 +184,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user?.id, user?.role]);
 
   const openEnrollModal = (view: "check" | "signin" | "signup" = "check") => {
-    setInitialModalView(view);
-    setIsEnrollModalOpen(true);
+    if (typeof window !== "undefined") {
+      if (view === "signin") {
+        window.location.href = "/login";
+      } else {
+        window.location.href = "/register";
+      }
+    }
   };
 
   const closeEnrollModal = () => {

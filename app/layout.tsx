@@ -53,9 +53,6 @@ export default function RootLayout({
 
             {/* Conditional Public Header/Footer vs Admin Fullscreen */}
             <ConditionalLayout>{children}</ConditionalLayout>
-
-            {/* Global Interactive Enrollment & Auth Modal */}
-            <EnrollmentModal />
           </SmoothScrollProvider>
         </AuthProvider>
       </body>

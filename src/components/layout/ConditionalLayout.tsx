@@ -8,8 +8,13 @@ import Footer from "@/components/layout/Footer";
 export default function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdminRoute = pathname?.startsWith("/admin");
+  const isAuthRoute =
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/forgot-password" ||
+    pathname === "/reset-password";
 
-  if (isAdminRoute) {
+  if (isAdminRoute || isAuthRoute) {
     return <div className="min-h-screen flex flex-col">{children}</div>;
   }
 

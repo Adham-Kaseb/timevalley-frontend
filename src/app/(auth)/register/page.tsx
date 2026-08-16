@@ -20,17 +20,69 @@ export default function RegisterPage() {
   const [creationStep, setCreationStep] = useState<number>(1);
   const [creationProgress, setCreationProgress] = useState<number>(0);
 
+  // Calculate Password Strength Score (0 to 100) with detailed rules breakdown
+  const calculatePasswordStrength = (pass: string) => {
+    if (!pass) {
+      return {
+        score: 0,
+        label: "فارغة",
+        color: "bg-[#0E6875]/20",
+        rules: { min8Chars: false, hasUpper: false, hasNumber: false, hasSpecial: false },
+        passedCount: 0,
+        isWeak: true,
+      };
+    }
+
+    const min8Chars = pass.length >= 8;
+    const hasUpper = /[A-Z]/.test(pass);
+    const hasNumber = /[0-9]/.test(pass);
+    const hasSpecial = /[^A-Za-z0-9]/.test(pass);
+
+    let score = 0;
+    if (min8Chars) score += 30;
+    if (hasUpper) score += 25;
+    if (hasNumber) score += 25;
+    if (hasSpecial) score += 20;
+
+    const rules = { min8Chars, hasUpper, hasNumber, hasSpecial };
+    const passedCount = [min8Chars, hasUpper, hasNumber, hasSpecial].filter(Boolean).length;
+    const isWeak = score < 55 || passedCount < 3;
+
+    let label = "ضعيفة جداً";
+    let color = "bg-red-500";
+
+    if (!isWeak) {
+      if (score >= 80 || passedCount === 4) {
+        label = "قوية وآمنة";
+        color = "bg-teal-400";
+      } else {
+        label = "متوسطة / مقبولة";
+        color = "bg-amber-400";
+      }
+    }
+
+    return { score, label, color, rules, passedCount, isWeak };
+  };
+
+  const passwordStrength = calculatePasswordStrength(password);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    const emailDomainRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailDomainRegex.test(email.trim())) {
+      setError('يرجى إدخال بريد إلكتروني صحيح يحتوي على نطاق معتمد (مثال: name@gmail.com)');
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError('كلمات المرور غير متطابقة');
       return;
     }
 
-    if (password.length < 6) {
-      setError('كلمة المرور يجب أن لا تقل عن 6 أحرف');
+    if (passwordStrength.isWeak) {
+      setError('كلمة المرور ضعيفة جداً. يرجى تحقيق 3 شروط أمان على الأقل لإنشاء الحساب.');
       return;
     }
 
@@ -164,6 +216,48 @@ export default function RegisterPage() {
                 )}
               </button>
             </div>
+
+            {/* Password Strength Indicator & Checklist */}
+            {password && (
+              <div className="space-y-2 pt-2">
+                <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full transition-all duration-300 ${passwordStrength.color}`}
+                    style={{ width: `${passwordStrength.score}%` }}
+                  ></div>
+                </div>
+                <div className="text-[11px] font-bold text-slate-400 flex justify-between items-center">
+                  <span>قوة كلمة المرور:</span>
+                  <span className={`font-extrabold px-2 py-0.5 rounded-md ${
+                    passwordStrength.isWeak
+                      ? "bg-red-500/10 text-red-400 border border-red-500/20"
+                      : "bg-teal-400/10 text-teal-300 border border-teal-400/20"
+                  }`}>
+                    {passwordStrength.label}
+                  </span>
+                </div>
+
+                <div className="bg-slate-800/60 rounded-xl p-3 border border-slate-700/60 space-y-1.5 text-[11px]">
+                  <p className="font-extrabold text-slate-300 text-[10px] uppercase tracking-wider">
+                    شروط الأمان (تحقيق 3 شروط على الأقل):
+                  </p>
+                  <div className="grid grid-cols-2 gap-1.5 font-semibold">
+                    <div className={`flex items-center gap-1.5 ${passwordStrength.rules.min8Chars ? "text-teal-300" : "text-slate-500"}`}>
+                      <span>{passwordStrength.rules.min8Chars ? "✓" : "✗"} 8 أحرف على الأقل</span>
+                    </div>
+                    <div className={`flex items-center gap-1.5 ${passwordStrength.rules.hasUpper ? "text-teal-300" : "text-slate-500"}`}>
+                      <span>{passwordStrength.rules.hasUpper ? "✓" : "✗"} حرف كبير (A-Z)</span>
+                    </div>
+                    <div className={`flex items-center gap-1.5 ${passwordStrength.rules.hasNumber ? "text-teal-300" : "text-slate-500"}`}>
+                      <span>{passwordStrength.rules.hasNumber ? "✓" : "✗"} رقم (0-9)</span>
+                    </div>
+                    <div className={`flex items-center gap-1.5 ${passwordStrength.rules.hasSpecial ? "text-teal-300" : "text-slate-500"}`}>
+                      <span>{passwordStrength.rules.hasSpecial ? "✓" : "✗"} رمز خاص (!@#$)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div>

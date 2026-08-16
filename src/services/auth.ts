@@ -31,6 +31,33 @@ export const authService = {
   },
 
   /**
+   * Send password reset OTP code via email
+   * POST /auth/forgot-password
+   */
+  async forgotPassword(email: string): Promise<{ success: boolean; message: string }> {
+    const response = await apiClient.post<{ success: boolean; message: string }>('/auth/forgot-password', { email });
+    return response.data;
+  },
+
+  /**
+   * Verify 6-digit OTP code
+   * POST /auth/verify-reset-code
+   */
+  async verifyResetCode(email: string, code: string): Promise<{ success: boolean; token: string }> {
+    const response = await apiClient.post<{ success: boolean; token: string }>('/auth/verify-reset-code', { email, code });
+    return response.data;
+  },
+
+  /**
+   * Reset password with token
+   * POST /auth/reset-password
+   */
+  async resetPassword(token: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+    const response = await apiClient.post<{ success: boolean; message: string }>('/auth/reset-password', { token, newPassword });
+    return response.data;
+  },
+
+  /**
    * Get active user profile from backend
    * GET /auth/me
    */
