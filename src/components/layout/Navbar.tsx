@@ -42,16 +42,12 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-6">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
-          {/* Desktop Image Logo */}
+          {/* Responsive Brand Image Logo */}
           <img
             src="/images/logos/logo-3.png"
             alt="TimeValley Logo"
-            className="h-8 sm:h-12 w-auto object-contain hidden lg:block origin-left transition-transform"
+            className="h-8 sm:h-10 lg:h-12 w-auto object-contain origin-left transition-transform"
           />
-          {/* Mobile Text Logo */}
-          <span className="lg:hidden font-extrabold text-xl tracking-tight text-[#1A1A1A]">
-            TIME<span className="text-[#0E6875]">VALLEY</span>
-          </span>
         </Link>
 
         {/* Streamlined Navigation Links */}

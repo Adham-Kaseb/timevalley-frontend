@@ -23,16 +23,28 @@
   }
 
   html {
-    font-size: 112.5%; /* Scaled up root typography baseline (18px) for optimal clarity */
+    font-size: 100%; /* Default mobile portrait baseline (16px) */
     direction: ltr;
     font-family: 'Tajawal', var(--font-tajawal), sans-serif;
+  }
+
+  @media (min-width: 480px) {
+    html {
+      font-size: 106.25%; /* Mobile landscape & small tablet baseline (17px) */
+    }
+  }
+
+  @media (min-width: 768px) {
+    html {
+      font-size: 112.5%; /* Tablet landscape & desktop baseline (18px) */
+    }
   }
 
   body {
     background-color: var(--bg-canvas);
     color: var(--color-text-main);
     font-family: 'Tajawal', var(--font-tajawal), sans-serif;
-    font-size: 1.05rem;
+    font-size: 1rem;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;

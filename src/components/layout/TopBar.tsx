@@ -2,8 +2,8 @@
 
 export default function TopBar() {
   return (
-    <div className="bg-[#0E6875] text-white text-xs py-2 px-4 border-b border-white/10 hidden md:block relative z-50">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+    <div className="bg-[#0E6875] text-white text-xs py-1.5 sm:py-2 px-3 sm:px-4 border-b border-white/10 hidden sm:block relative z-50">
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 sm:gap-4">
         
         {/* Left side: Live Announcement Badge & Dynamic Telemetry Ticker */}
         <div className="flex items-center gap-3 min-w-0">

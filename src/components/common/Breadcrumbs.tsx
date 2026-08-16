@@ -55,9 +55,9 @@ export default function Breadcrumbs({ customItems }: BreadcrumbsProps) {
   return (
     <nav
       aria-label="Breadcrumb navigation"
-      className="py-3 flex items-center text-xs font-semibold text-gray-500 overflow-x-auto"
+      className="py-2.5 sm:py-3 flex items-center text-xs font-semibold text-gray-500 overflow-x-auto no-scrollbar max-w-full"
     >
-      <div className="bg-white/90 backdrop-blur-md border border-gray-200/90 rounded-full px-4 py-2 shadow-2xs inline-flex items-center gap-2.5">
+      <div className="bg-white/90 backdrop-blur-md border border-gray-200/90 rounded-full px-3.5 sm:px-4 py-1.5 sm:py-2 shadow-2xs inline-flex items-center gap-2 sm:gap-2.5 max-w-full">
         {items.map((item, idx) => {
           const isLast = idx === items.length - 1;
           const isFirst = idx === 0;
