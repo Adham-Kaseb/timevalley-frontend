@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import contactService from "@/services/contact";
+import CustomTopicSelect from "./CustomTopicSelect";
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -17,6 +17,7 @@ export default function ContactModal({ isOpen, onClose, defaultSubject = "Ventur
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [subject, setSubject] = useState(defaultSubject);
+  const [otherTopic, setOtherTopic] = useState("");
   const [message, setMessage] = useState("");
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,14 +44,21 @@ export default function ContactModal({ isOpen, onClose, defaultSubject = "Ventur
       return;
     }
 
+    if (subject === "Other" && !otherTopic.trim()) {
+      setError("Please specify your custom inquiry topic.");
+      return;
+    }
+
     setIsSubmitting(true);
+
+    const finalSubject = subject === "Other" ? `Other: ${otherTopic.trim()}` : subject.trim();
 
     try {
       await contactService.submitContact({
         name: name.trim(),
         email: email.trim(),
         phone: phone.trim(),
-        subject: subject.trim(),
+        subject: finalSubject,
         message: message.trim(),
       });
 
@@ -68,6 +76,7 @@ export default function ContactModal({ isOpen, onClose, defaultSubject = "Ventur
     setIsSubmitted(false);
     setError("");
     setMessage("");
+    setOtherTopic("");
     onClose();
   };
 
@@ -148,17 +157,12 @@ export default function ContactModal({ isOpen, onClose, defaultSubject = "Ventur
 
               <div>
                 <label className="block text-xs font-extrabold text-gray-700 mb-1">Inquiry Topic</label>
-                <select
+                <CustomTopicSelect
                   value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#0E6875]"
-                >
-                  <option value="Venture Advisory Inquiry">Venture Advisory Inquiry</option>
-                  <option value="Diploma Enrollment Inquiry">Diploma Enrollment & 5,000 LE Fee</option>
-                  <option value="Co-Founder Matchmaking">Co-Founder Matchmaking</option>
-                  <option value="Pre-Seed Capital Investment">Pre-Seed Capital Investment</option>
-                  <option value="General Question">General Question</option>
-                </select>
+                  onChange={setSubject}
+                  otherValue={otherTopic}
+                  onOtherChange={setOtherTopic}
+                />
               </div>
 
               <div>

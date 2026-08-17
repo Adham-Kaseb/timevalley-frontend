@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import InstallPWAButton from "@/components/common/InstallPWAButton";
+
 
 export default function Navbar() {
   const { openEnrollModal, isLoggedIn, user, logout } = useAuth();
@@ -202,6 +204,9 @@ export default function Navbar() {
 
         {/* Right Actions & Mobile Hamburger */}
         <div className="flex items-center gap-3">
+          {/* PWA Install Button */}
+          <InstallPWAButton />
+
           {(mounted && isLoggedIn) ? (
             <div className="relative group">
               <Link
@@ -367,6 +372,10 @@ export default function Navbar() {
             <span>About Us</span>
             <i className="fa-solid fa-chevron-right text-xs text-gray-300"></i>
           </Link>
+
+          <div className="pt-2 border-t border-gray-100 flex justify-center">
+            <InstallPWAButton className="w-full justify-center py-2.5 text-xs" />
+          </div>
         </div>
       </div>
     </header>

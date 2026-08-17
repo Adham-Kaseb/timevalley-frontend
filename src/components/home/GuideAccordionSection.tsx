@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import contactService from "@/services/contact";
+import CustomTopicSelect from "@/components/common/CustomTopicSelect";
 
 export default function GuideAccordionSection() {
   const { user } = useAuth();
@@ -18,6 +19,7 @@ export default function GuideAccordionSection() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [subject, setSubject] = useState("Venture Advisory Inquiry");
+  const [otherTopic, setOtherTopic] = useState("");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -53,14 +55,21 @@ export default function GuideAccordionSection() {
       return;
     }
 
+    if (subject === "Other" && !otherTopic.trim()) {
+      setError("Please specify your custom inquiry topic.");
+      return;
+    }
+
     setIsSubmitting(true);
+
+    const finalSubject = subject === "Other" ? `Other: ${otherTopic.trim()}` : subject.trim();
 
     try {
       await contactService.submitContact({
         name: name.trim(),
         email: email.trim(),
         phone: phone.trim(),
-        subject: subject.trim(),
+        subject: finalSubject,
         message: message.trim(),
       });
 
@@ -81,6 +90,7 @@ export default function GuideAccordionSection() {
     setIsSubmitted(false);
     setError("");
     setMessage("");
+    setOtherTopic("");
   };
 
   const accordionItems = [
@@ -282,17 +292,12 @@ export default function GuideAccordionSection() {
                       {/* Inquiry Topic - Stagger Step 4 */}
                       <div className="animate-in fade-in slide-in-from-bottom-2 duration-400 delay-400">
                         <label className="block text-xs font-extrabold text-gray-700 mb-1">Inquiry Topic</label>
-                        <select
+                        <CustomTopicSelect
                           value={subject}
-                          onChange={(e) => setSubject(e.target.value)}
-                          className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#0E6875] shadow-xs"
-                        >
-                          <option value="Venture Advisory Inquiry">Venture Advisory Inquiry</option>
-                          <option value="Diploma Enrollment">Diploma Enrollment & Fee</option>
-                          <option value="Co-Founder Matchmaking">Co-Founder Matchmaking</option>
-                          <option value="Pre-Seed Investment">Pre-Seed Investment</option>
-                          <option value="General Inquiry">General Inquiry</option>
-                        </select>
+                          onChange={setSubject}
+                          otherValue={otherTopic}
+                          onOtherChange={setOtherTopic}
+                        />
                       </div>
 
                       {/* Message Field - Stagger Step 5 */}
