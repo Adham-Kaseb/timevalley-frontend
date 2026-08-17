@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import contactService from "@/services/contact";
 import CustomTopicSelect from "./CustomTopicSelect";
 
 interface ContactModalProps {

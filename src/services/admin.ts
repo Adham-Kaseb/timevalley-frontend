@@ -104,7 +104,7 @@ export const adminService = {
   /**
    * Create a new student or admin user
    */
-  async createUser(payload: { name: string; email: string; password: string; phone?: string; role?: string; autoEnrollDiploma?: boolean }) {
+  async createUser(payload: { name: string; email: string; password: string; phone?: string; role?: string; autoEnrollDiploma?: boolean; permissions?: string[] }) {
     const response = await apiClient.post('/users/admin/create-user', payload);
     return response.data;
   },
@@ -119,6 +119,13 @@ export const adminService = {
       status,
     });
     return response.data;
+  },
+
+  /**
+   * Alias for diploma access toggling
+   */
+  async toggleDiplomaAccess(userId: string, active: boolean, courseId = 'venture-architect-diploma') {
+    return this.toggleEnrollment(userId, active ? 'ACTIVE' : 'INACTIVE', courseId);
   },
 
   /**
