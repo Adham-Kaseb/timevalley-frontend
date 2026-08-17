@@ -92,13 +92,13 @@ export default function NotificationCenterModal({ isOpen, onClose }: Notificatio
           icon: "/icons/icon-192x192.png",
           badge: "/icons/icon-192x192.png",
           vibrate: [100, 50, 100],
-        });
+        } as any);
         setStatusMsg({ type: "success", text: "Test notification dispatched to your phone!" });
       } catch (err) {
         new Notification("⚡ TimeValley Test Alert", {
           body: "Your device is ready to receive instant PWA updates!",
           icon: "/icons/icon-192x192.png",
-        });
+        } as any);
       }
     } else {
       setStatusMsg({ type: "error", text: "Please enable notification permission first." });
