@@ -6,7 +6,13 @@ export default function InstallPWAButton({ className = "" }: { className?: strin
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showGuideModal, setShowGuideModal] = useState(false);
 
+  const [isStandalone, setIsStandalone] = useState(false);
+
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
+    }
+
     const handleBeforeInstallPrompt = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -14,6 +20,7 @@ export default function InstallPWAButton({ className = "" }: { className?: strin
 
     const handleAppInstalled = () => {
       setDeferredPrompt(null);
+      setIsStandalone(true);
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
@@ -36,6 +43,15 @@ export default function InstallPWAButton({ className = "" }: { className?: strin
       setShowGuideModal(true);
     }
   };
+
+  if (isStandalone) {
+    return (
+      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-xl border border-emerald-200/80 ${className}`}>
+        <i className="fa-solid fa-circle-check text-emerald-600 text-xs"></i>
+        <span>App Installed</span>
+      </span>
+    );
+  }
 
   return (
     <>
