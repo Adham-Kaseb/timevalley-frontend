@@ -319,16 +319,16 @@ function WorkspaceContent() {
                   <>
                     <Link
                       href="/admin"
-                      className="bg-amber-400 hover:bg-amber-500 text-gray-950 font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2"
+                      className="bg-amber-400 hover:bg-amber-500 text-gray-950 font-extrabold text-xs px-3 sm:px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5 text-center"
                     >
-                      <i className="fa-solid fa-shield-halved text-xs"></i>
-                      <span>⚡ Super Admin Console</span>
+                      <i className="fa-solid fa-shield-halved text-xs hidden sm:inline-block"></i>
+                      <span>Super Admin Console</span>
                     </Link>
                     <Link
                       href="/diplomas"
-                      className="bg-white hover:bg-gray-100 text-[#0E6875] font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2"
+                      className="bg-white hover:bg-gray-100 text-[#0E6875] font-extrabold text-xs px-3 sm:px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5 text-center"
                     >
-                      <i className="fa-solid fa-graduation-cap text-xs"></i>
+                      <i className="fa-solid fa-graduation-cap text-xs hidden sm:inline-block"></i>
                       <span>Enter Classroom</span>
                     </Link>
                   </>
@@ -337,18 +337,18 @@ function WorkspaceContent() {
               return certificates.length > 0 ? (
                 <Link
                   href="/diplomas?tab=lessons"
-                  className="bg-white hover:bg-gray-100 text-[#0E6875] font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2"
+                  className="bg-white hover:bg-gray-100 text-[#0E6875] font-extrabold text-xs px-3 sm:px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5 text-center"
                 >
-                  <i className="fa-solid fa-play text-xs"></i>
+                  <i className="fa-solid fa-play text-xs hidden sm:inline-block"></i>
                   <span>Enter Classroom</span>
                 </Link>
               ) : (
                 <button
                   onClick={() => openEnrollModal("signup")}
-                  className="bg-amber-400 hover:bg-amber-500 text-gray-900 font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer"
+                  className="bg-amber-400 hover:bg-amber-500 text-gray-900 font-extrabold text-xs px-3 sm:px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center"
                   title="Enroll in a diploma to unlock classroom access"
                 >
-                  <i className="fa-solid fa-lock text-xs"></i>
+                  <i className="fa-solid fa-lock text-xs hidden sm:inline-block"></i>
                   <span>Unlock Classroom</span>
                 </button>
               );
@@ -356,10 +356,10 @@ function WorkspaceContent() {
 
             <button
               onClick={logout}
-              className="bg-red-500/20 hover:bg-red-500/30 text-white border border-red-400/40 font-extrabold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer"
+              className="bg-red-500/20 hover:bg-red-500/30 text-white border border-red-400/40 font-extrabold text-xs px-3 sm:px-4 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer text-center"
               title="Sign Out of Workspace"
             >
-              <i className="fa-solid fa-right-from-bracket text-xs"></i>
+              <i className="fa-solid fa-right-from-bracket text-xs hidden sm:inline-block"></i>
               <span>Sign Out</span>
             </button>
           </div>
