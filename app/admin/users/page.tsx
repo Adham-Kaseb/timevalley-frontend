@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import adminService, { AdminUser } from "@/services/admin";
 import apiClient from "@/lib/axios";
-import CreateUserModal from "@/components/admin/CreateUserModal";
 import StudentManageDrawer from "@/components/admin/StudentManageDrawer";
-
 import { useAuth } from "@/context/AuthContext";
 
 export default function UsersManagementDashboard() {
@@ -18,8 +17,7 @@ export default function UsersManagementDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<"ALL" | "ENROLLED" | "UNENROLLED" | "ADMIN">("ALL");
 
-  // Modals & Drawers
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  // Drawers
   const [selectedStudent, setSelectedStudent] = useState<AdminUser | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -102,13 +100,13 @@ export default function UsersManagementDashboard() {
           </p>
         </div>
 
-        <button
-          onClick={() => setIsCreateModalOpen(true)}
+        <Link
+          href="/admin/users/create"
           className="bg-[#0E6875] hover:bg-[#0B4E58] text-white font-extrabold text-xs px-5 py-3.5 rounded-2xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2.5 shrink-0 cursor-pointer"
         >
           <i className="fa-solid fa-user-plus text-sm"></i>
           <span>Add New Student / User</span>
-        </button>
+        </Link>
       </div>
 
       {/* Metrics Summary Row */}
@@ -161,10 +159,10 @@ export default function UsersManagementDashboard() {
           </div>
 
           {/* Filter Pills */}
-          <div className="flex items-center gap-1.5 bg-gray-100 p-1 rounded-2xl w-full sm:w-auto overflow-x-auto">
+          <div className="flex items-center gap-1.5 bg-gray-100 p-1.5 rounded-2xl w-full sm:w-auto overflow-x-auto no-scrollbar shrink-0">
             <button
               onClick={() => setRoleFilter("ALL")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                 roleFilter === "ALL" ? "bg-[#0E6875] text-white shadow-md" : "text-gray-600 hover:bg-gray-200"
               }`}
             >
@@ -173,7 +171,7 @@ export default function UsersManagementDashboard() {
 
             <button
               onClick={() => setRoleFilter("ENROLLED")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                 roleFilter === "ENROLLED" ? "bg-[#0E6875] text-white shadow-md" : "text-gray-600 hover:bg-gray-200"
               }`}
             >
@@ -182,7 +180,7 @@ export default function UsersManagementDashboard() {
 
             <button
               onClick={() => setRoleFilter("UNENROLLED")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                 roleFilter === "UNENROLLED" ? "bg-[#0E6875] text-white shadow-md" : "text-gray-600 hover:bg-gray-200"
               }`}
             >
@@ -191,7 +189,7 @@ export default function UsersManagementDashboard() {
 
             <button
               onClick={() => setRoleFilter("ADMIN")}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                 roleFilter === "ADMIN" ? "bg-[#0E6875] text-white shadow-md" : "text-gray-600 hover:bg-gray-200"
               }`}
             >
@@ -272,13 +270,7 @@ export default function UsersManagementDashboard() {
         )}
       </div>
 
-      {/* Modals & Drawers */}
-      <CreateUserModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSuccess={fetchInitialData}
-      />
-
+      {/* Student Manage Drawer */}
       <StudentManageDrawer
         isOpen={isDrawerOpen}
         student={selectedStudent}

@@ -498,7 +498,48 @@ export default function DiplomasPage() {
             </div>
           </div>
 
-          {/* Navigation Pill Bar */}
+          {/* Mobile Tab Selector Dropdown (< sm) */}
+          <div className="sm:hidden relative">
+            <button
+              onClick={() => setMobileTabOpen(!mobileTabOpen)}
+              className="w-full bg-white border border-gray-200 rounded-2xl p-3.5 flex items-center justify-between text-xs font-extrabold text-[#0E6875] shadow-sm cursor-pointer hover:border-[#0E6875]/40 transition-all"
+            >
+                <div className="flex items-center gap-2.5">
+                  <span className="w-7 h-7 rounded-xl bg-[#0E6875]/10 text-[#0E6875] flex items-center justify-center text-xs">
+                    <i className={`fa-solid ${tabList.find(t => t.id === activeTab)?.icon || 'fa-gauge-high'}`}></i>
+                  </span>
+                  <span>{tabList.find(t => t.id === activeTab)?.label || 'Diploma Workspace'}</span>
+                </div>
+                <i className={`fa-solid fa-chevron-down text-xs transition-transform duration-200 ${mobileTabOpen ? 'rotate-180' : ''}`}></i>
+              </button>
+
+              {mobileTabOpen && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150 space-y-1">
+                  {tabList.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => {
+                        handleTabChange(t.id);
+                        setMobileTabOpen(false);
+                      }}
+                      className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-extrabold transition-colors cursor-pointer ${
+                        activeTab === t.id
+                          ? "bg-[#0E6875] text-white"
+                          : "text-gray-700 hover:bg-[#FAF0E9] hover:text-[#0E6875]"
+                      }`}
+                    >
+                      <i className={`fa-solid ${t.icon} w-4 text-center`}></i>
+                      <span>{t.label}</span>
+                      {activeTab === t.id && (
+                        <i className="fa-solid fa-check ml-auto text-xs"></i>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+          {/* Desktop & Tablet Navigation Pill Bar (>= sm) */}
           <div className="hidden sm:flex bg-[#0E6875] p-2.5 rounded-3xl shadow-2xl items-center justify-center gap-2 flex-wrap border border-white/10">
             {tabList.map((t) => (
               <button

@@ -14,6 +14,8 @@ export default function ConditionalLayout({ children }: { children: React.ReactN
     pathname === "/forgot-password" ||
     pathname === "/reset-password";
 
+  const isWorkspaceRoute = pathname?.startsWith("/workspace");
+
   if (isAdminRoute || isAuthRoute) {
     return <div className="min-h-screen flex flex-col">{children}</div>;
   }
@@ -23,7 +25,7 @@ export default function ConditionalLayout({ children }: { children: React.ReactN
       <TopBar />
       <Navbar />
       <main className="flex-1 z-10">{children}</main>
-      <Footer />
+      {!isWorkspaceRoute && <Footer />}
     </>
   );
 }

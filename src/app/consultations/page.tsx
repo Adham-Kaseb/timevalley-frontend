@@ -10,6 +10,7 @@ export default function ConsultationsPage() {
   const [cards, setCards] = useState<ConsultationCardItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
 
   // Booking Modal State
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
@@ -190,8 +191,50 @@ export default function ConsultationsPage() {
                 </p>
               </div>
 
-              {/* Category Tabs */}
-              <div className="flex flex-wrap items-center gap-2 bg-white p-1.5 rounded-2xl border border-gray-200 shadow-2xs">
+              {/* Mobile Category Dropdown Selector (< sm) */}
+              <div className="sm:hidden relative w-full">
+                <button
+                  type="button"
+                  onClick={() => setCategoryDropdownOpen(!categoryDropdownOpen)}
+                  className="w-full bg-white border border-gray-200 rounded-2xl p-3.5 flex items-center justify-between text-xs font-extrabold text-[#0E6875] shadow-xs cursor-pointer hover:border-[#0E6875]/40 transition-all"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-7 h-7 rounded-xl bg-[#0E6875]/10 text-[#0E6875] flex items-center justify-center text-xs">
+                      <i className="fa-solid fa-filter"></i>
+                    </span>
+                    <span>Category: {selectedCategory}</span>
+                  </div>
+                  <i className={`fa-solid fa-chevron-down text-xs transition-transform duration-200 ${categoryDropdownOpen ? "rotate-180" : ""}`}></i>
+                </button>
+
+                {categoryDropdownOpen && (
+                  <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-gray-200 rounded-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150 space-y-1">
+                    {categories.map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => {
+                          setSelectedCategory(cat);
+                          setCategoryDropdownOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-extrabold transition-colors cursor-pointer ${
+                          selectedCategory === cat
+                            ? "bg-[#0E6875] text-white"
+                            : "text-gray-700 hover:bg-[#FAF0E9] hover:text-[#0E6875]"
+                        }`}
+                      >
+                        <span>{cat}</span>
+                        {selectedCategory === cat && (
+                          <i className="fa-solid fa-check text-xs ml-auto"></i>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Desktop & Tablet Category Tabs (>= sm) */}
+              <div className="hidden sm:flex items-center gap-2 bg-white p-1.5 rounded-2xl border border-gray-200 shadow-2xs">
                 {categories.map((cat) => (
                   <button
                     key={cat}
@@ -224,28 +267,28 @@ export default function ConsultationsPage() {
                 {filteredCards.map((card) => (
                   <div
                     key={card.id}
-                    className="bg-white border border-gray-200/90 rounded-3xl p-6 sm:p-8 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-6 group relative overflow-hidden"
+                    className="bg-white border border-gray-200/90 rounded-3xl p-5 sm:p-8 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-6 group relative overflow-hidden"
                   >
                     <div className="space-y-4">
                       {/* Category & Price Bar */}
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="bg-[#FAF0E9] border border-[#EDA296]/40 text-[#0E6875] text-xs font-black px-3.5 py-1 rounded-full uppercase tracking-wider">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="bg-[#FAF0E9] border border-[#EDA296]/40 text-[#0E6875] text-[10px] sm:text-xs font-black px-2.5 py-1 rounded-full uppercase tracking-wider whitespace-nowrap">
                           {card.category}
                         </span>
 
-                        <div className="flex items-center gap-2">
-                          <span className="bg-gray-100 text-gray-700 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <span className="bg-gray-100 text-gray-700 text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 whitespace-nowrap">
                             <i className="fa-solid fa-clock text-[#0E6875]"></i>
                             <span>{card.duration}</span>
                           </span>
-                          <span className="bg-[#0E6875] text-white text-xs font-black px-3.5 py-1 rounded-full shadow-2xs">
+                          <span className="bg-[#0E6875] text-white text-[10px] sm:text-xs font-black px-2.5 py-1 rounded-full shadow-2xs whitespace-nowrap">
                             {card.price > 0 ? `${card.currency} $${card.price}` : "Included"}
                           </span>
                         </div>
                       </div>
 
                       {/* Card Title */}
-                      <h3 className="text-xl font-black text-gray-900 leading-snug group-hover:text-[#0E6875] transition-colors">
+                      <h3 className="text-lg sm:text-xl font-black text-gray-900 leading-snug group-hover:text-[#0E6875] transition-colors">
                         {card.title}
                       </h3>
 
@@ -256,11 +299,11 @@ export default function ConsultationsPage() {
 
                       {/* Tags */}
                       {Array.isArray(card.tags) && card.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-2 pt-2">
+                        <div className="flex flex-wrap gap-1.5 pt-1">
                           {card.tags.map((tag, idx) => (
                             <span
                               key={idx}
-                              className="bg-gray-100 text-gray-600 text-[11px] font-bold px-2.5 py-0.5 rounded-lg"
+                              className="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap"
                             >
                               #{tag}
                             </span>
@@ -270,12 +313,12 @@ export default function ConsultationsPage() {
                     </div>
 
                     {/* Footer Consultant Info & Booking CTA */}
-                    <div className="pt-5 border-t border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
                         <img
                           src={card.consultantAvatar || "/images/team/CEO.jpg"}
                           alt={card.consultantName}
-                          className="w-10 h-10 rounded-full object-cover border border-[#0E6875]/30 shadow-xs"
+                          className="w-10 h-10 rounded-full object-cover border border-[#0E6875]/30 shadow-xs shrink-0"
                         />
                         <div>
                           <p className="text-xs font-extrabold text-gray-900 leading-tight">
@@ -289,7 +332,7 @@ export default function ConsultationsPage() {
 
                       <button
                         onClick={() => openBooking(card)}
-                        className="w-full sm:w-auto bg-[#0E6875] hover:bg-[#0B4E58] text-white text-xs font-extrabold px-5 py-3 rounded-2xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+                        className="w-full sm:w-auto bg-[#0E6875] hover:bg-[#0B4E58] text-white text-xs font-extrabold px-5 py-3 rounded-2xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
                       >
                         <i className="fa-solid fa-calendar-check"></i>
                         <span>Book Session</span>
