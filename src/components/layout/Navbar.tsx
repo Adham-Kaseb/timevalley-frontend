@@ -5,12 +5,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import InstallPWAButton from "@/components/common/InstallPWAButton";
+import NotificationCenterModal from "@/components/common/NotificationCenterModal";
 
 
 export default function Navbar() {
   const { openEnrollModal, isLoggedIn, user, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [showNotifModal, setShowNotifModal] = useState(false);
   const [mounted, setMounted] = useState(false);
   const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const pathname = usePathname();
@@ -241,14 +243,35 @@ export default function Navbar() {
                     <span>Dashboard & Progress</span>
                   </Link>
 
+                  <button
+                    type="button"
+                    onClick={() => setShowNotifModal(true)}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-[#E6F3F5] hover:text-[#0E6875] transition-colors text-left font-semibold cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <i className="fa-solid fa-bell text-[#0E6875]"></i>
+                      <span>Notification Center</span>
+                    </div>
+                    <span className="w-2 h-2 rounded-full bg-[#0E6875]"></span>
+                  </button>
+
                   {(user?.role === "SUPER_ADMIN" || user?.role === "ADMIN" || user?.email === "adhamkasebssj4@gmail.com") && (
-                    <Link
-                      href="/admin"
-                      className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-amber-50 text-amber-900 font-extrabold hover:bg-amber-100 transition-colors border border-amber-200/60"
-                    >
-                      <i className="fa-solid fa-shield-halved text-amber-600"></i>
-                      <span>⚡ Super Admin Console</span>
-                    </Link>
+                    <>
+                      <Link
+                        href="/admin"
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-amber-50 text-amber-900 font-extrabold hover:bg-amber-100 transition-colors border border-amber-200/60"
+                      >
+                        <i className="fa-solid fa-shield-halved text-amber-600"></i>
+                        <span>⚡ Super Admin Console</span>
+                      </Link>
+                      <Link
+                        href="/admin/notifications"
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[#FAF0E9] text-[#0E6875] font-extrabold hover:bg-[#E6F3F5] transition-colors border border-[#0E6875]/20"
+                      >
+                        <i className="fa-solid fa-satellite-dish text-[#0E6875]"></i>
+                        <span>📢 PWA Push Broadcast</span>
+                      </Link>
+                    </>
                   )}
 
 
@@ -373,11 +396,18 @@ export default function Navbar() {
             <i className="fa-solid fa-chevron-right text-xs text-gray-300"></i>
           </Link>
 
-          <div className="pt-2 border-t border-gray-100 flex justify-center">
-            <InstallPWAButton className="w-full justify-center py-2.5 text-xs" />
+          <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
+            <span className="text-xs text-gray-500 font-medium">Install TimeValley App</span>
+            <InstallPWAButton />
           </div>
         </div>
       </div>
+
+      {/* PWA Notification Center Modal */}
+      <NotificationCenterModal
+        isOpen={showNotifModal}
+        onClose={() => setShowNotifModal(false)}
+      />
     </header>
   );
 }

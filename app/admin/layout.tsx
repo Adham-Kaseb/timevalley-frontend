@@ -81,9 +81,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF0E9] flex flex-col lg:flex-row font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-[#FAF0E9] flex flex-col lg:flex-row items-start font-sans">
       {/* Mobile Top Header Bar (< lg) */}
-      <header className="lg:hidden bg-[#0E6875] text-white px-4 py-3 flex items-center justify-between shadow-md sticky top-0 z-30">
+      <header className="lg:hidden bg-[#0E6875] text-white px-4 py-3 flex items-center justify-between shadow-md sticky top-0 z-30 w-full">
         <div className="flex items-center gap-3">
           <button
             onClick={() => setMobileSidebarOpen(true)}

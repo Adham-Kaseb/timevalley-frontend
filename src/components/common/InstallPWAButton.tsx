@@ -45,23 +45,18 @@ export default function InstallPWAButton({ className = "" }: { className?: strin
   };
 
   if (isStandalone) {
-    return (
-      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-xl border border-emerald-200/80 ${className}`}>
-        <i className="fa-solid fa-circle-check text-emerald-600 text-xs"></i>
-        <span>App Installed</span>
-      </span>
-    );
+    return null;
   }
 
   return (
     <>
       <button
         onClick={handleInstallClick}
-        className={`group border border-[#0E6875]/20 bg-[#0E6875]/10 hover:bg-[#0E6875] text-[#0E6875] hover:text-white text-xs font-extrabold px-3 py-2 rounded-xl transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-95 ${className}`}
+        className={`group w-9 h-9 rounded-xl border border-[#0E6875]/20 bg-[#0E6875]/10 hover:bg-[#0E6875] text-[#0E6875] hover:text-white flex items-center justify-center transition-all duration-200 cursor-pointer shadow-2xs active:scale-95 shrink-0 ${className}`}
         title="Install TimeValley App"
+        aria-label="Install App"
       >
         <i className="fa-solid fa-download text-xs group-hover:translate-y-0.5 transition-transform"></i>
-        <span className="inline">Install App</span>
       </button>
 
       {/* Sleek Modal Guide for Browser / Devices where beforeinstallprompt hasn't triggered */}
