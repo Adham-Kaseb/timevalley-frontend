@@ -16,9 +16,13 @@ export interface ChangePasswordDto {
 export interface Certificate {
   id: string;
   title: string;
+  type?: string;
+  courseId?: string;
   issueDate: string;
   code: string;
   credentialUrl?: string;
+  pdfUrl?: string;
+  metadata?: any;
 }
 
 export const userService = {
@@ -56,11 +60,16 @@ export const userService = {
 
   /**
    * Fetch user certificates
-   * GET /users/certificates
+   * GET /certificates/my (or /users/certificates)
    */
   async getCertificates(): Promise<Certificate[]> {
-    const response = await apiClient.get<Certificate[]>('/users/certificates');
-    return response.data;
+    try {
+      const response = await apiClient.get<Certificate[]>('/certificates/my');
+      return response.data;
+    } catch (e) {
+      const response = await apiClient.get<Certificate[]>('/users/certificates');
+      return response.data;
+    }
   },
 };
 

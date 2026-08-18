@@ -169,6 +169,14 @@ export const adminService = {
     const response = await apiClient.get(`/users/admin/student-detail/${studentId}`);
     return response.data;
   },
+
+  /**
+   * Reset all completed lesson progress records for a student account
+   */
+  async resetStudentProgress(studentId: string) {
+    const response = await apiClient.post(`/users/admin/reset-progress/${studentId}`);
+    return response.data;
+  },
 };
 
 export default adminService;

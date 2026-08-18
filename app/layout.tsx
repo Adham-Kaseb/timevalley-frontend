@@ -2,9 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Tajawal } from "next/font/google";
 import "./globals.css";
 import ConditionalLayout from "@/components/layout/ConditionalLayout";
-import CustomCursor from "@/components/common/CustomCursor";
-import CustomContextMenu from "@/components/common/CustomContextMenu";
 import SmoothScrollProvider from "@/components/common/SmoothScrollProvider";
+import ClientOverlays from "@/components/common/ClientOverlays";
 
 import { AuthProvider } from "@/context/AuthContext";
 import EnrollmentModal from "@/components/auth/EnrollmentModal";
@@ -45,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" dir="ltr" data-scroll-behavior="smooth" className={tajawal.variable}>
+    <html lang="en" dir="ltr" data-scroll-behavior="smooth" className={tajawal.variable} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/icons/icon-192x192.png" type="image/png" sizes="192x192" />
         <link rel="shortcut icon" href="/icons/icon-192x192.png" type="image/png" />
@@ -59,14 +58,11 @@ export default function RootLayout({
         />
         <Script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js" strategy="afterInteractive" />
       </head>
-      <body className="min-h-screen flex flex-col bg-[#FAF0E9] text-[#1C2B2D] font-sans relative antialiased selection:bg-[#0E6875] selection:text-white">
+      <body className="min-h-screen flex flex-col bg-[#FAF0E9] text-[#1C2B2D] font-sans relative antialiased selection:bg-[#0E6875] selection:text-white" suppressHydrationWarning>
         <AuthProvider>
           <SmoothScrollProvider>
-            {/* Global Interactive Custom Cursor */}
-            <CustomCursor />
-
-            {/* Global 1-Second Right-Click Navigation Menu */}
-            <CustomContextMenu />
+            {/* Global Interactive Client Overlays */}
+            <ClientOverlays />
 
             {/* Conditional Public Header/Footer vs Admin Fullscreen */}
             <ConditionalLayout>{children}</ConditionalLayout>

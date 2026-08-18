@@ -40,11 +40,7 @@ export default function UsersManagementDashboard() {
         apiClient.get("/courses/diploma").catch(() => ({ data: { modules: [] } })),
       ]);
 
-      // Filter out SUPER_ADMIN
-      const filteredUsers = (usersData || []).filter(
-        (u) => u.role !== "SUPER_ADMIN" && u.email !== "adhamkasebssj4@gmail.com"
-      );
-      setUsers(filteredUsers);
+      setUsers(usersData || []);
 
       if (curriculumRes?.data?.modules) {
         setModules(curriculumRes.data.modules);

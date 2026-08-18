@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import apiClient from "@/lib/axios";
 import adminService from "@/services/admin";
@@ -28,6 +29,7 @@ interface DiplomaModule {
 }
 
 export default function DiplomaBuilderPage() {
+  const router = useRouter();
   const [modules, setModules] = useState<DiplomaModule[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedModuleId, setExpandedModuleId] = useState<string | null>(null);
@@ -94,16 +96,12 @@ export default function DiplomaBuilderPage() {
 
   const handleOpenAddLesson = (moduleId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setTargetModuleId(moduleId);
-    setLessonToEdit(null);
-    setIsLessonModalOpen(true);
+    router.push(`/admin/diplomas/lessons/new?moduleId=${moduleId}`);
   };
 
   const handleOpenEditLesson = (moduleId: string, l: Lesson, e: React.MouseEvent) => {
     e.stopPropagation();
-    setTargetModuleId(moduleId);
-    setLessonToEdit(l);
-    setIsLessonModalOpen(true);
+    router.push(`/admin/diplomas/lessons/${l.id}?moduleId=${moduleId}`);
   };
 
   const handleDeleteLesson = async (id: string, title: string, e: React.MouseEvent) => {

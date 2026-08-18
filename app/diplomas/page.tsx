@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import DiplomaPurchaseModal from "@/components/diploma/DiplomaPurchaseModal";
 import apiClient from "@/lib/axios";
 import { getSocket } from "@/services/socket";
+import { claimCertificate } from "@/services/certificate";
 
 type TabType = "overview" | "lessons" | "quiz" | "certificate" | "progress";
 
@@ -437,9 +438,122 @@ export default function DiplomasPage() {
     }
   };
 
+  // Sync completed lessons with localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("timevalley_completed_lessons");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setCompletedLessons(parsed);
+          }
+        } catch (e) {}
+      }
+    }
+  }, []);
+
+  const [isExtractingCert, setIsExtractingCert] = useState(false);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
+
+  const toggleLessonCompleted = (id: string) => {
+    const isAdding = !completedLessons.includes(id);
+    setCompletedLessons((prev) => {
+      const updated = isAdding ? [...prev, id] : prev.filter((lId) => lId !== id);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("timevalley_completed_lessons", JSON.stringify(updated));
+      }
+      return updated;
+    });
+
+    // Auto-advance to next lesson immediately with transition toast
+    if (isAdding) {
+      if (activeLessonIdx < currentModule.lessons.length - 1) {
+        const nextLes = currentModule.lessons[activeLessonIdx + 1];
+        setToastMsg(`🎉 Lesson Completed! Advancing to Lesson ${nextLes.lessonNumber}...`);
+        setTimeout(() => setToastMsg(null), 3000);
+        setActiveLessonIdx((prev) => prev + 1);
+      } else if (selectedModuleIdx < modulesList.length - 1) {
+        const nextMod = modulesList[selectedModuleIdx + 1];
+        setToastMsg(`🎉 Module Completed! Advancing to ${nextMod.badgeTitle}...`);
+        setTimeout(() => setToastMsg(null), 3000);
+        setSelectedModuleIdx((prev) => prev + 1);
+        setActiveLessonIdx(0);
+      } else {
+        setToastMsg(`🎓 All 40 Diploma Lessons Completed! Claim your official Certificate.`);
+        setTimeout(() => setToastMsg(null), 4000);
+      }
+    }
+  };
+
   const markLessonComplete = (id: string) => {
-    if (!completedLessons.includes(id)) {
-      setCompletedLessons([...completedLessons, id]);
+    toggleLessonCompleted(id);
+  };
+
+  const handleClaimCertificate = async () => {
+    setIsExtractingCert(true);
+    setToastMsg("🎓 Issuing Official Diploma Certificate & dispatching email copy...");
+    try {
+      const cert = await claimCertificate("venture-architect-diploma");
+      if (cert?.code) {
+        setToastMsg(`🎓 Certificate #${cert.code} issued & sent to your email! Opening download view...`);
+        setTimeout(() => {
+          window.location.href = `/our-certificates?serial=${cert.code}&download=true`;
+        }, 1200);
+      } else {
+        window.location.href = "/our-certificates";
+      }
+    } catch (e) {
+      window.location.href = "/our-certificates";
+    } finally {
+      setIsExtractingCert(false);
+    }
+  };
+
+  const handleDownloadMaterial = (mat: { name: string; url?: string }) => {
+    if (!mat.url || mat.url === "#") {
+      setToastMsg("⚠️ No download URL available for this material.");
+      setTimeout(() => setToastMsg(null), 3000);
+      return;
+    }
+
+    setToastMsg(`📥 Downloading ${mat.name}...`);
+    setTimeout(() => setToastMsg(null), 3000);
+
+    if (mat.url.startsWith("data:")) {
+      try {
+        fetch(mat.url)
+          .then((res) => res.blob())
+          .then((blob) => {
+            const blobUrl = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = blobUrl;
+            a.download = mat.name.endsWith(".pdf") || mat.name.endsWith(".xlsx") || mat.name.endsWith(".docx") || mat.name.endsWith(".zip") ? mat.name : `${mat.name}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+          })
+          .catch(() => {
+            const a = document.createElement("a");
+            a.href = mat.url!;
+            a.download = mat.name;
+            a.target = "_blank";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          });
+      } catch (e) {
+        window.open(mat.url, "_blank");
+      }
+    } else {
+      const a = document.createElement("a");
+      a.href = mat.url;
+      a.download = mat.name;
+      a.target = "_blank";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
   };
 
@@ -496,6 +610,45 @@ export default function DiplomasPage() {
                 </div>
               )}
             </div>
+
+            {/* Certificate Claim & Extraction Banner */}
+            {(calculateProgress() >= 100 || completedLessons.length >= 35) && (
+              <div className="pt-2 animate-fadeIn">
+                <div className="bg-linear-to-r from-emerald-600 via-teal-600 to-[#0E6875] text-white p-4 sm:p-5 rounded-2xl shadow-lg border border-emerald-400/40 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-3.5 text-left">
+                    <div className="w-11 h-11 rounded-2xl bg-white/20 text-white flex items-center justify-center text-xl shrink-0 shadow-inner">
+                      🎓
+                    </div>
+                    <div>
+                      <h4 className="font-extrabold text-sm sm:text-base text-white">
+                        Congratulations! Diploma Requirements Fulfilled
+                      </h4>
+                      <p className="text-xs text-emerald-100 font-medium">
+                        You have completed 100% of the Venture Architect curriculum. Your official certificate is ready.
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleClaimCertificate}
+                    disabled={isExtractingCert}
+                    className="bg-white hover:bg-emerald-50 text-[#0E6875] font-black text-xs px-5 py-3 rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer whitespace-nowrap active:scale-95 shrink-0 flex items-center gap-2"
+                  >
+                    {isExtractingCert ? (
+                      <>
+                        <i className="fa-solid fa-spinner animate-spin text-sm"></i>
+                        <span>Extracting Certificate...</span>
+                      </>
+                    ) : (
+                      <>
+                        <i className="fa-solid fa-award text-amber-500 text-sm"></i>
+                        <span>Extract Official Certificate 🎓</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Mobile Tab Selector Dropdown (< sm) */}
@@ -884,10 +1037,11 @@ export default function DiplomasPage() {
                     </button>
                   </div>
                 ) : (
-                  <>
+                  <div key={currentLesson.id} className="space-y-6 animate-in fade-in slide-in-from-right-6 duration-300">
                     {/* Video Player */}
                     <div className="relative rounded-2xl overflow-hidden shadow-lg bg-black aspect-video">
                       <video
+                        key={currentLesson.videoUrl}
                         src={currentLesson.videoUrl}
                         controls
                         className="w-full h-full object-cover"
@@ -895,15 +1049,45 @@ export default function DiplomasPage() {
                     </div>
 
                     <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="bg-[#0E6875]/10 text-[#0E6875] text-xs font-black px-3 py-1 rounded-full">
-                          {currentModule.badgeTitle}
-                        </span>
-                        {currentLesson.hasQuiz && (
-                          <span className="bg-purple-100 text-purple-700 text-xs font-black px-3 py-1 rounded-full">
-                            Quiz Available
+                      <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
+                        <div className="flex items-center gap-2">
+                          <span className="bg-[#0E6875]/10 text-[#0E6875] text-xs font-black px-3 py-1 rounded-full">
+                            {currentModule.badgeTitle}
                           </span>
-                        )}
+                          {currentLesson.hasQuiz && (
+                            <span className="bg-purple-100 text-purple-700 text-xs font-black px-3 py-1 rounded-full">
+                              Quiz Available
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Interactive Mark Completed Button */}
+                        <button
+                          onClick={() => toggleLessonCompleted(currentLesson.id)}
+                          className={`group px-4 py-2 rounded-xl text-xs font-black transition-all duration-200 flex items-center gap-2 cursor-pointer shadow-sm active:scale-90 ${
+                            completedLessons.includes(currentLesson.id)
+                              ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20"
+                              : "bg-[#0E6875] hover:bg-[#0B4E58] text-white shadow-[#0E6875]/20 hover:-translate-y-0.5"
+                          }`}
+                          title={
+                            completedLessons.includes(currentLesson.id)
+                              ? "Click to mark lesson as incomplete"
+                              : "Click to mark lesson as completed"
+                          }
+                        >
+                          <i
+                            className={`fa-solid ${
+                              completedLessons.includes(currentLesson.id)
+                                ? "fa-circle-check text-emerald-200 text-sm"
+                                : "fa-check text-xs group-hover:scale-110 transition-transform"
+                            }`}
+                          ></i>
+                          <span>
+                            {completedLessons.includes(currentLesson.id)
+                              ? "Completed ✓"
+                              : "Mark as Completed"}
+                          </span>
+                        </button>
                       </div>
 
                       <h2 className="text-xl sm:text-2xl font-black text-[#1C2B2D]">
@@ -924,14 +1108,11 @@ export default function DiplomasPage() {
                           </h4>
                           <div className="space-y-2">
                             {currentLesson.materials.map((mat, mIdx) => (
-                              <a
+                              <div
                                 key={mIdx}
-                                href={mat.url && mat.url !== "#" ? mat.url : undefined}
-                                target={mat.url && mat.url !== "#" ? "_blank" : undefined}
-                                rel="noopener noreferrer"
-                                className={`flex items-center justify-between p-3 rounded-2xl bg-gray-50 hover:bg-[#E6F3F5]/60 border border-gray-200 text-xs font-bold transition-all group ${
-                                  mat.url && mat.url !== "#" ? "cursor-pointer" : ""
-                                }`}
+                                onClick={() => handleDownloadMaterial(mat)}
+                                className="flex items-center justify-between p-3.5 rounded-2xl bg-gray-50 hover:bg-[#E6F3F5] border border-gray-200 text-xs font-bold transition-all group cursor-pointer active:scale-98 shadow-2xs"
+                                title={`Click to download ${mat.name}`}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0 pr-2">
                                   <i className={`text-sm shrink-0 ${
@@ -943,7 +1124,7 @@ export default function DiplomasPage() {
                                       ? 'fa-solid fa-file-zipper text-amber-600'
                                       : 'fa-solid fa-file-pdf text-rose-500'
                                   }`} />
-                                  <span className="text-gray-700 group-hover:text-[#0E6875] transition-colors truncate">
+                                  <span className="text-gray-800 group-hover:text-[#0E6875] transition-colors truncate font-extrabold">
                                     {mat.name}
                                   </span>
                                 </div>
@@ -951,16 +1132,16 @@ export default function DiplomasPage() {
                                   <span className="text-gray-400 font-mono text-[11px]">
                                     {mat.size || "1.2 MB"}
                                   </span>
-                                  {mat.url && mat.url !== "#" && (
-                                    <i className="fa-solid fa-download text-gray-400 group-hover:text-[#0E6875] text-xs transition-colors" />
-                                  )}
+                                  <div className="w-7 h-7 rounded-xl bg-white border border-gray-200 group-hover:border-[#0E6875] text-gray-500 group-hover:text-[#0E6875] flex items-center justify-center text-xs transition-all shadow-2xs">
+                                    <i className="fa-solid fa-download" />
+                                  </div>
                                 </div>
-                              </a>
+                              </div>
                             ))}
                           </div>
                         </div>
                       )}
-                  </>
+                  </div>
                 )}
               </div>
             </div>
@@ -974,34 +1155,48 @@ export default function DiplomasPage() {
                 </h3>
 
                 <div className="space-y-2 max-h-125 overflow-y-auto pr-1">
-                  {currentModule.lessons.map((les, idx) => (
-                    <button
-                      key={les.id}
-                      onClick={() => setActiveLessonIdx(idx)}
-                      disabled={isCurrentModuleLocked}
-                      className={`w-full p-3.5 rounded-2xl border text-left text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
-                        activeLessonIdx === idx
-                          ? "bg-[#0E6875] text-white border-[#0E6875] shadow-md"
-                          : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5 overflow-hidden">
-                        <span
-                          className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 text-[11px] font-mono font-bold ${
-                            activeLessonIdx === idx
-                              ? "bg-white/20 text-white"
-                              : "bg-[#0E6875]/10 text-[#0E6875]"
-                          }`}
-                        >
-                          {les.lessonNumber}
-                        </span>
-                        <span className="truncate">{les.title}</span>
-                      </div>
-                      <span className="text-[10px] opacity-75 font-mono shrink-0 ml-2">
-                        {les.duration}
-                      </span>
-                    </button>
-                  ))}
+                  {currentModule.lessons.map((les, idx) => {
+                    const isLessonDone = completedLessons.includes(les.id);
+                    return (
+                      <button
+                        key={les.id}
+                        onClick={() => setActiveLessonIdx(idx)}
+                        disabled={isCurrentModuleLocked}
+                        className={`w-full p-3.5 rounded-2xl border text-left text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
+                          activeLessonIdx === idx
+                            ? "bg-[#0E6875] text-white border-[#0E6875] shadow-md"
+                            : isLessonDone
+                            ? "bg-emerald-50/60 border-emerald-200/80 text-emerald-950 hover:bg-emerald-50"
+                            : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 overflow-hidden">
+                          <span
+                            className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 text-[11px] font-mono font-bold ${
+                              activeLessonIdx === idx
+                                ? "bg-white/20 text-white"
+                                : isLessonDone
+                                ? "bg-emerald-600 text-white shadow-xs"
+                                : "bg-[#0E6875]/10 text-[#0E6875]"
+                            }`}
+                          >
+                            {isLessonDone ? <i className="fa-solid fa-check text-[10px]" /> : les.lessonNumber}
+                          </span>
+                          <span className="truncate">{les.title}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                          {isLessonDone && (
+                            <span className="text-[10px] font-black text-emerald-600 bg-emerald-100/80 px-2 py-0.5 rounded-full border border-emerald-300/60">
+                              ✓ Done
+                            </span>
+                          )}
+                          <span className="text-[10px] opacity-75 font-mono">
+                            {les.duration}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -1138,6 +1333,28 @@ export default function DiplomasPage() {
         isOpen={isPurchaseModalOpen}
         onClose={() => setIsPurchaseModalOpen(false)}
       />
+
+      {/* Floating Transition Toast Notification */}
+      {toastMsg && (
+        <div className="fixed bottom-6 right-6 z-100 max-w-sm w-auto bg-[#051c20]/90 backdrop-blur-xl text-white text-xs font-black p-4 rounded-2xl shadow-[0_20px_50px_rgba(14,104,117,0.35)] border border-emerald-400/40 animate-in fade-in zoom-in-95 slide-in-from-bottom-6 duration-300 flex items-center gap-3.5 overflow-hidden">
+          <div className="w-9 h-9 rounded-xl bg-linear-to-tr from-emerald-500 to-[#0E6875] text-white flex items-center justify-center text-sm shadow-md shrink-0 animate-bounce duration-1000">
+            <i className="fa-solid fa-circle-check text-emerald-200"></i>
+          </div>
+          <div className="flex-1 pr-2">
+            <div className="text-[10px] text-emerald-300 font-extrabold uppercase tracking-wider flex items-center gap-1.5 mb-0.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>Telemetry Update</span>
+            </div>
+            <p className="text-xs text-white font-extrabold leading-snug">{toastMsg}</p>
+          </div>
+          <button
+            onClick={() => setToastMsg(null)}
+            className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 text-white/70 hover:text-white flex items-center justify-center text-[10px] transition-colors shrink-0 cursor-pointer"
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

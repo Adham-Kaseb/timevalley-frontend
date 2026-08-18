@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import adminService, { AdminUser } from "@/services/admin";
+import { adminIssueCertificate, adminResendCertificateEmail } from "@/services/certificate";
 
 interface DiplomaModule {
   id: string;
@@ -43,6 +44,62 @@ export default function StudentManageDrawer({
   const [dueDate, setDueDate] = useState("");
   const [isSendingTask, setIsSendingTask] = useState(false);
   const [actionMsg, setActionMsg] = useState("");
+  // Certificate Engine Admin Handlers
+  const [isIssuingCert, setIsIssuingCert] = useState(false);
+  const [isResettingProgress, setIsResettingProgress] = useState(false);
+
+  const handleResetProgress = async () => {
+    if (!student) return;
+    const confirmed = window.confirm(
+      `⚠️ Are you sure you want to reset all completed lesson progress for ${student.name}?\n\nThis action will clear all lesson progress metrics for this student account.`
+    );
+    if (!confirmed) return;
+
+    setIsResettingProgress(true);
+    setActionMsg("");
+    try {
+      const updated = await adminService.resetStudentProgress(student.id);
+      if (updated) {
+        setStudentDetail(updated);
+      }
+      setActionMsg(`🔄 Student progress reset successfully for ${student.name}!`);
+      onRefresh();
+    } catch (err: any) {
+      console.error("Failed to reset student progress:", err);
+      setActionMsg("Failed to reset student progress.");
+    } finally {
+      setIsResettingProgress(false);
+    }
+  };
+
+  const handleAdminIssueCert = async () => {
+    if (!student) return;
+    setIsIssuingCert(true);
+    setActionMsg("");
+    try {
+      const newCert = await adminIssueCertificate({
+        userId: student.id,
+        courseId: "venture-architect-diploma",
+        title: "Venture Architect & Founder Diploma",
+      });
+      setActionMsg(`🎓 Certificate issued successfully! Serial Code: ${newCert.code}`);
+      loadStudentDetail(student.id);
+    } catch (err: any) {
+      setActionMsg(err?.message || "Failed to issue certificate.");
+    } finally {
+      setIsIssuingCert(false);
+    }
+  };
+
+  const handleAdminResendCertEmail = async (certId: string) => {
+    setActionMsg("");
+    try {
+      await adminResendCertificateEmail(certId);
+      setActionMsg("✉️ Certificate notification email sent to student successfully!");
+    } catch (err: any) {
+      setActionMsg(err?.message || "Failed to send certificate email.");
+    }
+  };
 
   useEffect(() => {
     if (student && isOpen) {
@@ -321,6 +378,54 @@ export default function StudentManageDrawer({
                 </button>
               </div>
 
+              {/* Certificate Engine Control Card */}
+              <div className="p-5 rounded-2xl border border-[#EDA296]/40 bg-linear-to-tr from-[#FAF0E9] via-white to-amber-50/40 shadow-xs space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-[#0E6875] text-white flex items-center justify-center text-sm shadow-xs">
+                      <i className="fa-solid fa-award"></i>
+                    </div>
+                    <div>
+                      <h4 className="font-extrabold text-sm text-gray-900">Certificate Engine & Credentials</h4>
+                      <p className="text-xs text-gray-500">Issue official verified diploma certificate & email student</p>
+                    </div>
+                  </div>
+                  <button
+                    disabled={isIssuingCert}
+                    onClick={handleAdminIssueCert}
+                    className="bg-[#0E6875] hover:bg-[#0B4E58] text-white text-xs font-extrabold px-4 py-2 rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
+                  >
+                    {isIssuingCert ? (
+                      <i className="fa-solid fa-spinner animate-spin text-xs"></i>
+                    ) : (
+                      <i className="fa-solid fa-graduation-cap text-xs"></i>
+                    )}
+                    <span>Issue Certificate</span>
+                  </button>
+                </div>
+
+                {studentDetail?.certificates?.length > 0 && (
+                  <div className="pt-2 border-t border-amber-200/60 space-y-2">
+                    <span className="text-[11px] text-gray-500 font-extrabold block uppercase">Issued Certificates ({studentDetail.certificates.length}):</span>
+                    {studentDetail.certificates.map((c: any) => (
+                      <div key={c.id} className="flex items-center justify-between bg-white p-2.5 rounded-xl border border-gray-200 text-xs">
+                        <div>
+                          <strong className="text-[#0E6875] font-mono block">{c.code}</strong>
+                          <span className="text-[11px] text-gray-500">{c.title}</span>
+                        </div>
+                        <button
+                          onClick={() => handleAdminResendCertEmail(c.id)}
+                          className="bg-amber-100 hover:bg-amber-200 text-amber-900 text-[11px] font-bold px-3 py-1 rounded-lg transition-all flex items-center gap-1 cursor-pointer"
+                        >
+                          <i className="fa-solid fa-paper-plane text-[10px]"></i>
+                          <span>Resend Email</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {/* Granular Module Unlocks List */}
               <div className="space-y-3">
                 <div className="text-xs font-extrabold text-gray-700 uppercase tracking-wider">
@@ -573,6 +678,40 @@ export default function StudentManageDrawer({
                     {studentDetail?.certificates?.length || 0}
                   </div>
                 </div>
+              </div>
+
+              {/* Reset Student Progress Action Card */}
+              <div className="p-4 rounded-2xl bg-rose-50/80 border border-rose-200/80 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center text-xs shadow-2xs">
+                      <i className="fa-solid fa-rotate-left"></i>
+                    </div>
+                    <div>
+                      <h4 className="font-extrabold text-xs text-rose-950">Reset Account Progress</h4>
+                      <p className="text-[11px] text-rose-700 font-medium">Clear all completed lesson records & progress metrics for this student</p>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  disabled={isResettingProgress}
+                  onClick={handleResetProgress}
+                  className="w-full bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs py-2.5 rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95 disabled:opacity-60"
+                >
+                  {isResettingProgress ? (
+                    <>
+                      <i className="fa-solid fa-spinner animate-spin text-xs"></i>
+                      <span>Resetting Account Progress...</span>
+                    </>
+                  ) : (
+                    <>
+                      <i className="fa-solid fa-rotate-left text-xs"></i>
+                      <span>Reset All Student Progress</span>
+                    </>
+                  )}
+                </button>
               </div>
 
               <div className="space-y-3">

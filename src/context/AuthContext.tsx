@@ -39,26 +39,8 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  // Synchronously initialize user from stored session on render frame 1 (zero flash!)
-  const [user, setUser] = useState<UserSession | null>(() => {
-    if (typeof window !== "undefined") {
-      const savedUser = authService.getStoredUser();
-      if (savedUser) {
-        return {
-          id: savedUser.id,
-          name: savedUser.name,
-          email: savedUser.email,
-          role: savedUser.role,
-          phone: savedUser.phone,
-          bio: savedUser.bio,
-          avatar: savedUser.avatar,
-          hasPurchasedDiploma: savedUser.role === "SUPER_ADMIN" || savedUser.hasPurchasedDiploma || false,
-          studentId: `TV-STD-${savedUser.id ? savedUser.id.substring(0, 5).toUpperCase() : "MEMBER"}`,
-        };
-      }
-    }
-    return null;
-  });
+  // Initialize user state as null to match SSR and ensure hydration safety across all environments
+  const [user, setUser] = useState<UserSession | null>(null);
 
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);

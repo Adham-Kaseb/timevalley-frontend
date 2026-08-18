@@ -35,8 +35,7 @@ export default function AdminOverviewPage() {
     try {
       const data = await adminService.listUsers();
       if (Array.isArray(data)) {
-        const filtered = data.filter((u) => u.role !== "SUPER_ADMIN" && u.email !== "adhamkasebssj4@gmail.com");
-        setUsersList(filtered);
+        setUsersList(data);
       }
     } catch (err: any) {
       if (err?.response?.status === 401) {

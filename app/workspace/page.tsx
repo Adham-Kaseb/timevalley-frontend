@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import userService, { Certificate } from "@/services/user";
+import { claimCertificate } from "@/services/certificate";
 
 function WorkspaceContent() {
   const { user, isLoggedIn, isAuthLoading, logout, setAuthUser, openEnrollModal } = useAuth();
@@ -118,15 +119,63 @@ function WorkspaceContent() {
     }
   }, [user]);
 
-  // Fetch certificates from backend
+  const [isClaimingCert, setIsClaimingCert] = useState(false);
+
+  // Fetch certificates from backend (and auto-issue for Admin accounts)
   useEffect(() => {
-    if (isLoggedIn) {
-      userService
-        .getCertificates()
-        .then((certs) => setCertificates(certs))
-        .catch((err) => console.warn("Using sample certificates", err));
+    if (isLoggedIn && user) {
+      loadWorkspaceCertificates();
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, user]);
+
+  const loadWorkspaceCertificates = async () => {
+    try {
+      let certs = await userService.getCertificates();
+      const isAdmin = user?.role === "SUPER_ADMIN" || user?.role === "ADMIN";
+
+      // Read completed lessons from localStorage
+      let storedCompleted: string[] = [];
+      if (typeof window !== "undefined") {
+        try {
+          const raw = localStorage.getItem("timevalley_completed_lessons");
+          if (raw) storedCompleted = JSON.parse(raw);
+        } catch (e) {}
+      }
+
+      const isCompleted = storedCompleted.length >= 25 || isAdmin;
+
+      // Auto-issue certificate if student completed the diploma or is Admin
+      if (isCompleted && certs.length === 0) {
+        await claimCertificate("venture-architect-diploma");
+        certs = await userService.getCertificates();
+      }
+
+      setCertificates(certs);
+    } catch (err) {
+      console.warn("Error loading workspace certificates:", err);
+    }
+  };
+
+  const handleManualClaimCert = async () => {
+    setIsClaimingCert(true);
+    try {
+      const cert = await claimCertificate("venture-architect-diploma");
+      await loadWorkspaceCertificates();
+      if (cert && cert.code) {
+        setProfileSuccess("🎉 Official Certificate issued & emailed! Opening PDF download...");
+        setTimeout(() => {
+          router.push(`/our-certificates?serial=${encodeURIComponent(cert.code)}&download=true`);
+        }, 600);
+      } else {
+        router.push("/our-certificates");
+      }
+    } catch (err) {
+      console.error("Failed to claim certificate:", err);
+      router.push("/our-certificates");
+    } finally {
+      setIsClaimingCert(false);
+    }
+  };
 
   // Handle Profile Update
   const handleProfileSubmit = async (e: React.FormEvent) => {
@@ -367,7 +416,21 @@ function WorkspaceContent() {
 
         {/* Quick Stats Bar */}
         {(() => {
-          const isAdminAcc = user?.role === "SUPER_ADMIN" || user?.role === "ADMIN" || user?.email === "adhamkasebssj4@gmail.com";
+          let storedCompletedCount = 0;
+          if (typeof window !== "undefined") {
+            try {
+              const raw = localStorage.getItem("timevalley_completed_lessons");
+              if (raw) storedCompletedCount = JSON.parse(raw).length;
+            } catch (e) {}
+          }
+
+          const isAdminAcc = user?.role === "SUPER_ADMIN" || user?.role === "ADMIN";
+          const hasDiplomaCompleted = certificates.length > 0 || storedCompletedCount >= 25 || isAdminAcc;
+          const certCount = certificates.length > 0 ? certificates.length : hasDiplomaCompleted ? 1 : 0;
+          const completedHrs = hasDiplomaCompleted ? 120 : Math.min(120, Math.round((storedCompletedCount / 40) * 120));
+          const activeDiplomas = hasDiplomaCompleted || storedCompletedCount > 0 ? "1 Active" : "0 Active";
+          const statusLabel = isAdminAcc ? "SUPER_ADMIN" : certCount > 0 ? "Diploma Certified" : storedCompletedCount > 0 ? "Active Student" : "Registered Student";
+
           return (
             <div className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8 pt-6 border-t border-white/15">
               <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3.5 border border-white/15 flex items-center gap-3">
@@ -376,7 +439,7 @@ function WorkspaceContent() {
                 </div>
                 <div>
                   <span className="text-[10px] text-teal-100 font-extrabold uppercase tracking-wider block">Diplomas</span>
-                  <span className="text-base font-extrabold">{isAdminAcc ? "All Unlocked" : certificates.length > 0 ? "1 Active" : "0 Active"}</span>
+                  <span className="text-base font-extrabold">{activeDiplomas}</span>
                 </div>
               </div>
 
@@ -386,7 +449,7 @@ function WorkspaceContent() {
                 </div>
                 <div>
                   <span className="text-[10px] text-teal-100 font-extrabold uppercase tracking-wider block">Progress</span>
-                  <span className="text-base font-extrabold">{isAdminAcc ? "120 / 120 hrs" : certificates.length > 0 ? "78 / 120 hrs" : "0 / 120 hrs"}</span>
+                  <span className="text-base font-extrabold">{completedHrs} / 120 hrs</span>
                 </div>
               </div>
 
@@ -396,7 +459,7 @@ function WorkspaceContent() {
                 </div>
                 <div>
                   <span className="text-[10px] text-teal-100 font-extrabold uppercase tracking-wider block">Certificates</span>
-                  <span className="text-base font-extrabold">{isAdminAcc ? "All Granted" : `${certificates.length} Earned`}</span>
+                  <span className="text-base font-extrabold">{certCount} Earned</span>
                 </div>
               </div>
 
@@ -406,7 +469,7 @@ function WorkspaceContent() {
                 </div>
                 <div>
                   <span className="text-[10px] text-teal-100 font-extrabold uppercase tracking-wider block">Status</span>
-                  <span className="text-base font-extrabold">{isAdminAcc ? "SUPER_ADMIN" : certificates.length > 0 ? "Good Standing" : "Registered Student"}</span>
+                  <span className="text-base font-extrabold">{statusLabel}</span>
                 </div>
               </div>
             </div>
@@ -451,7 +514,9 @@ function WorkspaceContent() {
             }`}
           >
             <i className="fa-solid fa-award text-sm"></i>
-            <span>My Certificates ({certificates.length})</span>
+            <span>
+              My Certificates ({certificates.length > 0 ? certificates.length : (typeof window !== "undefined" && ((localStorage.getItem("timevalley_completed_lessons") && JSON.parse(localStorage.getItem("timevalley_completed_lessons")!).length >= 25) || user?.role === "ADMIN" || user?.role === "SUPER_ADMIN")) ? 1 : 0})
+            </span>
           </button>
 
           <button
@@ -725,13 +790,32 @@ function WorkspaceContent() {
                       Complete modules in your active diploma program to earn official verified credentials issued by TimeValley Institute.
                     </p>
                   </div>
-                  <Link
-                    href="/diplomas"
-                    className="inline-flex items-center gap-2 bg-[#0E6875] hover:bg-[#0B4E58] text-white text-xs font-extrabold px-5 py-2.5 rounded-xl shadow-md transition-all cursor-pointer"
-                  >
-                    <i className="fa-solid fa-compass text-xs"></i>
-                    <span>Browse Diplomas</span>
-                  </Link>
+                  <div className="flex items-center justify-center gap-3 flex-wrap">
+                    <button
+                      onClick={handleManualClaimCert}
+                      disabled={isClaimingCert}
+                      className="inline-flex items-center gap-2 bg-[#0E6875] hover:bg-[#0B4E58] text-white text-xs font-extrabold px-5 py-2.5 rounded-xl shadow-md transition-all cursor-pointer disabled:opacity-60 active:scale-95"
+                    >
+                      {isClaimingCert ? (
+                        <>
+                          <i className="fa-solid fa-spinner animate-spin text-xs"></i>
+                          <span>Extracting Certificate...</span>
+                        </>
+                      ) : (
+                        <>
+                          <i className="fa-solid fa-award text-amber-400 text-xs"></i>
+                          <span>Extract Official Certificate 🎓</span>
+                        </>
+                      )}
+                    </button>
+                    <Link
+                      href="/diplomas"
+                      className="inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-extrabold px-5 py-2.5 rounded-xl border border-gray-300 transition-all cursor-pointer"
+                    >
+                      <i className="fa-solid fa-compass text-xs"></i>
+                      <span>Browse Diplomas</span>
+                    </Link>
+                  </div>
                 </div>
               ) : (
                 /* Certificates Cards Grid */
@@ -771,11 +855,11 @@ function WorkspaceContent() {
                       </div>
 
                       <button
-                        onClick={() => setSelectedCert(cert)}
-                        className="w-full bg-[#0E6875] hover:bg-[#0B4E58] text-white font-extrabold text-xs py-2.5 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
+                        onClick={() => router.push(`/our-certificates?serial=${encodeURIComponent(cert.code)}&download=true`)}
+                        className="w-full bg-[#0E6875] hover:bg-[#0B4E58] text-white font-extrabold text-xs py-2.5 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
                       >
-                        <i className="fa-solid fa-eye text-xs"></i>
-                        <span>View Official Certificate</span>
+                        <i className="fa-solid fa-[#0E6875] fa-file-pdf text-xs"></i>
+                        <span>View & Download Official PDF 🎓</span>
                       </button>
                     </div>
                   ))}
@@ -901,8 +985,8 @@ function WorkspaceContent() {
             </button>
 
             {/* Printable Certificate Template */}
-            <div className="border-8 border-[#0E6875] p-6 text-center space-y-4 rounded-2xl bg-linear-to-tr from-[#FAF0E9]/40 via-white to-teal-50/30 relative">
-              <div className="w-16 h-16 rounded-full bg-[#0E6875] text-white flex items-center justify-center text-3xl mx-auto shadow-md">
+            <div className="border-8 border-[#0E6875] p-6 sm:p-8 text-center space-y-4 rounded-2xl bg-linear-to-tr from-[#FAF0E9]/40 via-white to-teal-50/30 relative">
+              <div className="w-16 h-16 rounded-full bg-[#0E6875] text-white flex items-center justify-center text-3xl mx-auto shadow-md border-2 border-amber-400">
                 <i className="fa-solid fa-graduation-cap"></i>
               </div>
 
@@ -924,21 +1008,28 @@ function WorkspaceContent() {
               <h5 className="text-base font-extrabold text-gray-900">{selectedCert.title}</h5>
 
               <div className="pt-4 border-t border-gray-200 flex justify-between items-center text-[10px] font-mono text-gray-500">
-                <span>Code: {selectedCert.code}</span>
+                <span>Serial Code: <strong className="text-[#0E6875]">{selectedCert.code}</strong></span>
                 <span>Date: {new Date(selectedCert.issueDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
               </div>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => {
-                  alert("Downloading official PDF certificate...");
+                  window.print();
                 }}
                 className="flex-1 bg-[#0E6875] hover:bg-[#0B4E58] text-white font-extrabold text-xs py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <i className="fa-solid fa-download"></i>
-                <span>Download PDF</span>
+                <span>Download / Print PDF</span>
               </button>
+              <Link
+                href={`/our-certificates?serial=${encodeURIComponent(selectedCert.code)}`}
+                className="flex-1 bg-amber-400 hover:bg-amber-500 text-gray-950 font-extrabold text-xs py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <i className="fa-solid fa-shield-halved"></i>
+                <span>Verify Online</span>
+              </Link>
               <button
                 onClick={() => setSelectedCert(null)}
                 className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-extrabold text-xs px-5 py-3 rounded-xl transition-all cursor-pointer"

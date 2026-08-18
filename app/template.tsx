@@ -12,7 +12,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
   }, [pathname]);
 
   return (
-    <div key={pathname} className="page-transition-wrapper">
+    <div key={pathname} className="page-transition-wrapper" suppressHydrationWarning>
       {children}
     </div>
   );

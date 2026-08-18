@@ -184,6 +184,14 @@ export default function Navbar() {
                   <i className="fa-solid fa-book-bookmark text-[#0E6875] w-4"></i>{" "}
                   Content Library
                 </Link>
+                <Link
+                  href="/our-certificates"
+                  onClick={() => setDropdownOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-gray-700 hover:bg-[#FAF0E9] hover:text-[#0E6875]"
+                >
+                  <i className="fa-solid fa-award text-[#0E6875] w-4"></i>{" "}
+                  Our Certificates
+                </Link>
               </div>
             )}
           </div>
