@@ -694,20 +694,23 @@ export default function DiplomasPage() {
 
           {/* Desktop & Tablet Navigation Pill Bar (>= sm) */}
           <div className="hidden sm:flex bg-[#0E6875] p-2.5 rounded-3xl shadow-2xl items-center justify-center gap-2 flex-wrap border border-white/10">
-            {tabList.map((t) => (
-              <button
-                key={t.id}
-                onClick={() => handleTabChange(t.id)}
-                className={`px-5 py-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all flex items-center gap-2 cursor-pointer ${
-                  activeTab === t.id
-                    ? "bg-[#EDA296] text-white shadow-lg scale-105"
-                    : "text-white/90 hover:text-white hover:bg-white/10"
-                }`}
-              >
-                <i className={`fa-solid ${t.icon}`}></i>
-                <span>{t.label}</span>
-              </button>
-            ))}
+            {tabList.map((t) => {
+              const isActive = activeTab === t.id;
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => handleTabChange(t.id)}
+                  className={`px-5 py-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-300 transform active:scale-95 flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+                    isActive
+                      ? "bg-[#EDA296] text-white shadow-xl scale-105"
+                      : "text-white/90 hover:text-white hover:bg-white/15 hover:scale-102"
+                  }`}
+                >
+                  <i className={`fa-solid ${t.icon}`}></i>
+                  <span>{t.label}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 

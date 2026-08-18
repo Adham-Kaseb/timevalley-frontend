@@ -425,7 +425,7 @@ function CertificateVerificationContent() {
                 <button
                   onClick={handleDownloadPDF}
                   disabled={isDownloadingPDF}
-                  className="flex-1 md:flex-initial bg-[#0E6875] hover:bg-[#0B4E58] text-white font-extrabold text-xs px-6 py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap disabled:opacity-60 active:scale-95"
+                  className="flex-1 md:flex-initial bg-[#0E6875] hover:bg-[#0B4E58] text-white font-extrabold text-xs px-6 py-3.5 rounded-xl shadow-md transition-all duration-200 transform hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.97] flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap disabled:opacity-60"
                 >
                   {isDownloadingPDF ? (
                     <>
@@ -442,7 +442,7 @@ function CertificateVerificationContent() {
 
                 <button
                   onClick={handleCopyLink}
-                  className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold text-xs px-5 py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold text-xs px-5 py-3.5 rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.97] flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
                 >
                   <i
                     className={`fa-solid ${copied ? "fa-check text-emerald-600" : "fa-link"}`}

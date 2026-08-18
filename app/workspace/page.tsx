@@ -481,55 +481,32 @@ function WorkspaceContent() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
         {/* Navigation Tabs Bar */}
         <div className="bg-white rounded-2xl p-2 border border-gray-200 shadow-sm flex items-center gap-2 overflow-x-auto no-scrollbar">
-          <button
-            onClick={() => setActiveTab("overview")}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === "overview"
-                ? "bg-[#0E6875] text-white shadow-md"
-                : "text-gray-600 hover:bg-gray-100"
-            }`}
-          >
-            <i className="fa-solid fa-chart-line text-sm"></i>
-            <span>Overview & Progress</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab("profile")}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === "profile"
-                ? "bg-[#0E6875] text-white shadow-md"
-                : "text-gray-600 hover:bg-gray-100"
-            }`}
-          >
-            <i className="fa-solid fa-user-gear text-sm"></i>
-            <span>My Profile</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab("certificates")}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === "certificates"
-                ? "bg-[#0E6875] text-white shadow-md"
-                : "text-gray-600 hover:bg-gray-100"
-            }`}
-          >
-            <i className="fa-solid fa-award text-sm"></i>
-            <span>
-              My Certificates ({certificates.length > 0 ? certificates.length : (typeof window !== "undefined" && ((localStorage.getItem("timevalley_completed_lessons") && JSON.parse(localStorage.getItem("timevalley_completed_lessons")!).length >= 25) || user?.role === "ADMIN" || user?.role === "SUPER_ADMIN")) ? 1 : 0})
-            </span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab("settings")}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === "settings"
-                ? "bg-[#0E6875] text-white shadow-md"
-                : "text-gray-600 hover:bg-gray-100"
-            }`}
-          >
-            <i className="fa-solid fa-sliders text-sm"></i>
-            <span>Account Settings</span>
-          </button>
+          {[
+            { id: "overview", label: "Overview & Progress", icon: "fa-chart-line" },
+            { id: "profile", label: "My Profile", icon: "fa-user-gear" },
+            {
+              id: "certificates",
+              label: `My Certificates (${certificates.length > 0 ? certificates.length : (typeof window !== "undefined" && ((localStorage.getItem("timevalley_completed_lessons") && JSON.parse(localStorage.getItem("timevalley_completed_lessons")!).length >= 25) || user?.role === "ADMIN" || user?.role === "SUPER_ADMIN")) ? 1 : 0})`,
+              icon: "fa-award",
+            },
+            { id: "settings", label: "Account Settings", icon: "fa-sliders" },
+          ].map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.97] cursor-pointer whitespace-nowrap ${
+                  isActive
+                    ? "bg-[#0E6875] text-white shadow-md"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`}
+              >
+                <i className={`fa-solid ${tab.icon} text-sm`}></i>
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* TAB 1: OVERVIEW & PROGRESS */}

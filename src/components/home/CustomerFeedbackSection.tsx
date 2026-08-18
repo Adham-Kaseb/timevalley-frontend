@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function CustomerFeedbackSection() {
   const [index, setIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
   const [isEgyptianDialect, setIsEgyptianDialect] = useState<Record<number, boolean>>({});
+  const [isPaused, setIsPaused] = useState(false);
   const startXRef = useRef<number>(0);
 
   const testimonials = [
@@ -88,11 +89,26 @@ export default function CustomerFeedbackSection() {
     setDragOffset(0);
   };
 
+  // 5-Second Autoplay Slider Timer
+  useEffect(() => {
+    if (isPaused || isDragging) return;
+
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % testimonials.length);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [isPaused, isDragging, testimonials.length]);
+
   const current = testimonials[index];
   const isEgActive = isEgyptianDialect[index] || false;
 
   return (
-    <section className="py-8 md:py-12 relative select-none overflow-hidden">
+    <section
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      className="py-8 md:py-12 relative select-none overflow-hidden"
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Top Dark Teal Banner with /images/feedback_banner.png Background */}

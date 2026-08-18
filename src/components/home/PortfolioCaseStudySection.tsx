@@ -50,30 +50,39 @@ export default function PortfolioCaseStudySection() {
 
         {/* Filter Tabs */}
         <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`text-xs sm:text-sm font-extrabold px-6 py-2.5 rounded-full transition-all cursor-pointer ${
-                activeTab === tab
-                  ? "bg-[#0E6875] text-white shadow-lg scale-105"
-                  : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200/90 shadow-2xs"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab;
+            return (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`relative text-xs sm:text-sm font-extrabold px-6 py-2.5 rounded-full transition-all duration-300 transform active:scale-95 cursor-pointer whitespace-nowrap ${
+                  isActive
+                    ? "bg-[#0E6875] text-white shadow-xl scale-105"
+                    : "bg-white text-gray-700 hover:bg-gray-100 hover:scale-102 border border-gray-200/90 shadow-xs"
+                }`}
+              >
+                <span>{tab}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Dynamic Bento Grid Layout */}
-        <div key={activeTab} className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-in fade-in slide-in-from-bottom-3 duration-300">
+        {/* Dynamic Bento Grid Layout with Continuous Smooth Morphing */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* Column Left (7 Columns) */}
           <div className="lg:col-span-7 space-y-6">
             
             {/* 1. FinPay AI - Promoted Venture */}
-            {showFinPay && (
-              <div className="bg-[#0E6875] text-white rounded-3xl p-7 sm:p-8 relative overflow-hidden shadow-2xl border border-white/10 animate-in fade-in duration-300">
+            <div
+              className={`transition-all duration-500 ease-in-out transform ${
+                showFinPay
+                  ? "opacity-100 scale-100 max-h-250 translate-y-0"
+                  : "opacity-0 scale-95 max-h-0 pointer-events-none overflow-hidden -translate-y-3"
+              }`}
+            >
+              <div className="bg-[#0E6875] text-white rounded-3xl p-7 sm:p-8 relative overflow-hidden shadow-2xl border border-white/10">
                 {/* Background Photo Overlay */}
                 <div className="absolute inset-0 z-0">
                   <img
@@ -145,11 +154,17 @@ export default function PortfolioCaseStudySection() {
                   </div>
                 </div>
               </div>
-            )}
+            </div>
 
             {/* 2. LogiTrack - Fleet Automation */}
-            {showLogiTrack && (
-              <div className="bg-[#0E6875] text-white rounded-3xl p-7 sm:p-8 relative overflow-hidden shadow-xl border border-white/10 group min-h-56 flex flex-col justify-between animate-in fade-in duration-300">
+            <div
+              className={`transition-all duration-500 ease-in-out transform ${
+                showLogiTrack
+                  ? "opacity-100 scale-100 max-h-250 translate-y-0"
+                  : "opacity-0 scale-95 max-h-0 pointer-events-none overflow-hidden -translate-y-3"
+              }`}
+            >
+              <div className="bg-[#0E6875] text-white rounded-3xl p-7 sm:p-8 relative overflow-hidden shadow-xl border border-white/10 group min-h-56 flex flex-col justify-between">
                 {/* Background Photo Overlay */}
                 <div className="absolute inset-0 z-0">
                   <img
@@ -188,11 +203,17 @@ export default function PortfolioCaseStudySection() {
                   </div>
                 </div>
               </div>
-            )}
+            </div>
 
             {/* 3. EduSpark Card */}
-            {showEduSpark && (
-              <div className="bg-[#E6F3F5] border border-[#0E6875]/20 rounded-3xl p-6 sm:p-7 flex flex-col justify-between space-y-4 shadow-sm animate-in fade-in duration-300">
+            <div
+              className={`transition-all duration-500 ease-in-out transform ${
+                showEduSpark
+                  ? "opacity-100 scale-100 max-h-250 translate-y-0"
+                  : "opacity-0 scale-95 max-h-0 pointer-events-none overflow-hidden -translate-y-3"
+              }`}
+            >
+              <div className="bg-[#E6F3F5] border border-[#0E6875]/20 rounded-3xl p-6 sm:p-7 flex flex-col justify-between space-y-4 shadow-sm">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-white text-[#0E6875] flex items-center justify-center font-bold text-lg shadow-xs">
@@ -226,11 +247,17 @@ export default function PortfolioCaseStudySection() {
                   </a>
                 </div>
               </div>
-            )}
+            </div>
 
             {/* 4. TradeFlow B2B Card */}
-            {showTradeFlow && (
-              <div className="bg-[#0E6875] text-white rounded-3xl p-6 sm:p-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl border border-white/10 animate-in fade-in duration-300">
+            <div
+              className={`transition-all duration-500 ease-in-out transform ${
+                showTradeFlow
+                  ? "opacity-100 scale-100 max-h-250 translate-y-0"
+                  : "opacity-0 scale-95 max-h-0 pointer-events-none overflow-hidden -translate-y-3"
+              }`}
+            >
+              <div className="bg-[#0E6875] text-white rounded-3xl p-6 sm:p-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl border border-white/10">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 text-[#71D5E4] flex items-center justify-center text-xl shrink-0">
                     <i className="fa-solid fa-bag-shopping"></i>
@@ -262,7 +289,7 @@ export default function PortfolioCaseStudySection() {
                   <i className="fa-solid fa-arrow-right text-[11px]"></i>
                 </a>
               </div>
-            )}
+            </div>
 
           </div>
 
@@ -270,8 +297,14 @@ export default function PortfolioCaseStudySection() {
           <div className="lg:col-span-5 space-y-6">
             
             {/* HealthPulse AI Tall Bento Card */}
-            {showHealthPulse && (
-              <div className="bg-white rounded-3xl p-7 sm:p-8 shadow-2xl border border-gray-100 relative overflow-hidden flex flex-col justify-between space-y-6 animate-in fade-in duration-300">
+            <div
+              className={`transition-all duration-500 ease-in-out transform ${
+                showHealthPulse
+                  ? "opacity-100 scale-100 max-h-250 translate-y-0"
+                  : "opacity-0 scale-95 max-h-0 pointer-events-none overflow-hidden -translate-y-3"
+              }`}
+            >
+              <div className="bg-white rounded-3xl p-7 sm:p-8 shadow-2xl border border-gray-100 relative overflow-hidden flex flex-col justify-between space-y-6">
                 
                 {/* Background Photo Overlay */}
                 <div className="absolute inset-0 z-0">
@@ -295,16 +328,16 @@ export default function PortfolioCaseStudySection() {
                   </div>
 
                   <div>
-                    <h3 className="text-2xl font-extrabold text-[#0E6875] tracking-tight">
-                      HealthPulse AI — Clinical Intelligence
+                    <h3 className="text-2xl sm:text-3xl font-extrabold text-[#1C2B2D] tracking-tight">
+                      HealthPulse AI — Clinical Workflow Engine
                     </h3>
-                    <p className="text-gray-600 text-xs sm:text-sm leading-relaxed font-medium mt-2">
-                      Reduced B2B hospital sales cycles from 9 months to 45 days
-                      using TimeValley's Tutor LMS enterprise sales playbooks.
+                    <p className="text-gray-500 text-xs sm:text-sm leading-relaxed font-medium mt-2">
+                      Deploys hospital-grade clinical AI for diagnostic workflow
+                      optimization and patient triage.
                     </p>
                   </div>
 
-                  {/* Table Data */}
+                  {/* 3 Metric Chips */}
                   <div className="bg-[#FAF0E9]/60 border border-gray-200/80 rounded-2xl p-4 space-y-2.5 text-xs font-semibold">
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Hospital Adoption</span>
@@ -350,13 +383,18 @@ export default function PortfolioCaseStudySection() {
                     <span>Explore HealthTech Playbook</span>
                   </a>
                 </div>
-
               </div>
-            )}
+            </div>
 
             {/* CyberShield AI Bottom Card */}
-            {showCyberShield && (
-              <div className="bg-[#FAF0E9] border border-[#EDA296]/40 rounded-3xl p-6 sm:p-7 flex items-center justify-between gap-4 shadow-sm animate-in fade-in duration-300">
+            <div
+              className={`transition-all duration-500 ease-in-out transform ${
+                showCyberShield
+                  ? "opacity-100 scale-100 max-h-250 translate-y-0"
+                  : "opacity-0 scale-95 max-h-0 pointer-events-none overflow-hidden -translate-y-3"
+              }`}
+            >
+              <div className="bg-[#FAF0E9] border border-[#EDA296]/40 rounded-3xl p-6 sm:p-7 flex items-center justify-between gap-4 shadow-sm">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-white border border-[#EDA296]/40 text-[#E08577] flex items-center justify-center text-xl shrink-0 shadow-xs">
                     <i className="fa-solid fa-shield-halved"></i>
@@ -388,7 +426,7 @@ export default function PortfolioCaseStudySection() {
                   <i className="fa-solid fa-arrow-right text-[11px]"></i>
                 </a>
               </div>
-            )}
+            </div>
 
           </div>
 
