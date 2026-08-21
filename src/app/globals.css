@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;800;900&display=swap');
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
 @import "tailwindcss";
 
@@ -294,5 +294,54 @@ html.lenis, html.lenis body {
 }
 .menu-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(237, 162, 150, 0.8);
+}
+
+/* Assistant Custom Scrollbar & Glassmorphism */
+.assistant-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(14, 104, 117, 0.3) transparent;
+}
+.assistant-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.assistant-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.assistant-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(14, 104, 117, 0.25);
+  border-radius: 9999px;
+}
+.assistant-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(14, 104, 117, 0.5);
+}
+
+@keyframes assistantPulseRing {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+}
+
+.assistant-pulse-ring {
+  animation: assistantPulseRing 2.4s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+}
+
+/* Scoped Arabic Typography for TimeValley Assistant */
+.tv-assistant-arabic {
+  font-family: 'Tajawal', var(--font-outfit), sans-serif;
+}
+.tv-assistant-arabic :not(i):not([class*="fa"]):not(svg):not(path) {
+  font-family: 'Tajawal', var(--font-outfit), sans-serif;
+}
+.tv-assistant-arabic i[class*="fa"] {
+  font-family: 'Font Awesome 6 Free', 'Font Awesome 6 Pro', 'FontAwesome' !important;
 }
 
