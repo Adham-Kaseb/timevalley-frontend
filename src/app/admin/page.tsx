@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import adminService, { AdminUser } from "@/services/admin";
-import { getSocket } from "@/services/socket";
 
 export default function AdminOverviewPage() {
   const { user, isLoggedIn, isAuthLoading } = useAuth();
@@ -29,13 +28,6 @@ export default function AdminOverviewPage() {
     } else if (!isAuthLoading && !isLoggedIn) {
       setLoadingUsers(false);
     }
-
-    const socket = getSocket();
-    socket.on("diploma_access_updated", fetchUsers);
-
-    return () => {
-      socket.off("diploma_access_updated", fetchUsers);
-    };
   }, [isAuthLoading, isLoggedIn]);
 
   const fetchUsers = async () => {
@@ -43,8 +35,7 @@ export default function AdminOverviewPage() {
     try {
       const data = await adminService.listUsers();
       if (Array.isArray(data)) {
-        const filtered = data.filter((u) => u.role !== "SUPER_ADMIN" && u.email !== "adhamkasebssj4@gmail.com");
-        setUsersList(filtered);
+        setUsersList(data);
       }
     } catch (err: any) {
       if (err?.response?.status === 401) {
@@ -280,7 +271,7 @@ export default function AdminOverviewPage() {
                       </>
                     ) : (
                       <>
-                        <i className="fa-solid fa-[#0E6875] fa-floppy-disk"></i>
+                        <i className="fa-solid fa-floppy-disk"></i>
                         <span>Save Access Permissions</span>
                       </>
                     )}

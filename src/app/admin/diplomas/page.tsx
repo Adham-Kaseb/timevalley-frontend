@@ -278,7 +278,7 @@ export default function DiplomaBuilderPage() {
                               className="text-gray-400 hover:text-[#0E6875] text-xs p-1.5"
                               title="Preview Video Link"
                             >
-                              <i className="fa-solid fa-[#0E6875] fa-video"></i>
+                              <i className="fa-solid fa-video"></i>
                             </a>
 
                             <button

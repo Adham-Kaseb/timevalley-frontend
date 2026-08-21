@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 
 export default function TermsOfServicePage() {
   const lastUpdated = "August 16, 2026";
@@ -20,16 +18,14 @@ export default function TermsOfServicePage() {
 
   return (
     <div className="min-h-screen bg-white text-gray-800 font-sans selection:bg-[#0E6875] selection:text-white">
-      <Navbar />
-
       {/* Header Banner */}
-      <section className="relative pt-32 pb-20 bg-linear-to-b from-[#FAF0E9] via-[#FAF0E9]/60 to-white overflow-hidden border-b border-gray-100">
+      <section className="relative pt-24 pb-16 bg-linear-to-b from-[#FAF0E9] via-[#FAF0E9]/60 to-white overflow-hidden border-b border-gray-100">
         <div className="absolute top-1/4 right-10 w-96 h-96 bg-[#0E6875]/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-10 left-10 w-80 h-80 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E6F3F5] text-[#0E6875] text-xs font-extrabold border border-[#0E6875]/20 shadow-2xs mb-6">
-            <i className="fa-solid fa-[#0E6875] fa-scale-balanced" />
+            <i className="fa-solid fa-scale-balanced" />
             <span>TimeValley Legal Documentation</span>
           </div>
 
@@ -95,7 +91,7 @@ export default function TermsOfServicePage() {
                 <h2 className="text-xl font-extrabold text-[#1C2B2D]">1. Acceptance of Terms</h2>
               </div>
               <p>
-                By creating an account, accessing the TimeValley website (<code className="text-[#0E6875] font-mono">timevalley-frontend.vercel.app</code>), participating in the 120-Hour Venture Building Cohort, or using any associated LMS materials, video streams, or consulting services, you agree to be bound by these Terms of Service.
+                By creating an account, accessing the TimeValley website, participating in the 120-Hour Venture Building Cohort, or using any associated LMS materials, video streams, or consulting services, you agree to be bound by these Terms of Service.
               </p>
               <p>
                 If you do not agree to these terms in full, you must not access or use our services. TimeValley reserves the right to amend these terms at any time by updating this document.
@@ -230,8 +226,6 @@ export default function TermsOfServicePage() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

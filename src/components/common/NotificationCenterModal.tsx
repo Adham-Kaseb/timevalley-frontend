@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import notificationService from "@/services/notification";
+import {
+  notificationStorage,
+  AppNotification,
+} from "@/services/notificationStorage";
 
 interface NotificationCenterModalProps {
   isOpen: boolean;
@@ -9,33 +15,31 @@ interface NotificationCenterModalProps {
 }
 
 export default function NotificationCenterModal({ isOpen, onClose }: NotificationCenterModalProps) {
+  const router = useRouter();
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [permissionState, setPermissionState] = useState<"default" | "granted" | "denied">("default");
   const [loading, setLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState<{ type: "success" | "error" | "warning"; text: string } | null>(null);
-
-  const [inboxItems] = useState([
-    {
-      id: "1",
-      title: "🚀 Welcome to TimeValley PWA",
-      body: "Instant push notifications are active for real-time startup telemetry.",
-      date: "Just now",
-      url: "/workspace",
-    },
-    {
-      id: "2",
-      title: "💡 Venture Architect Diploma Live",
-      body: "Explore 8 comprehensive modules for founding tech startups in MENA.",
-      date: "2 hours ago",
-      url: "/diplomas",
-    },
-  ]);
+  const [inboxItems, setInboxItems] = useState<AppNotification[]>([]);
 
   useEffect(() => {
     if (isOpen) {
       checkSubscriptionAndPermission();
+      loadInbox();
     }
+
+    const handleUpdate = () => {
+      loadInbox();
+    };
+
+    window.addEventListener("notifications_updated", handleUpdate);
+    return () => window.removeEventListener("notifications_updated", handleUpdate);
   }, [isOpen]);
+
+  const loadInbox = () => {
+    setInboxItems(notificationStorage.getNotifications());
+  };
+
 
   const checkSubscriptionAndPermission = async () => {
     if (typeof window !== "undefined" && "Notification" in window) {
@@ -302,43 +306,101 @@ export default function NotificationCenterModal({ isOpen, onClose }: Notificatio
         <div className="flex items-center justify-between border-b border-gray-100 pb-3 pt-1">
           <span className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-2">
             <i className="fa-solid fa-inbox text-[#0E6875]"></i>
-            <span>Recent Announcements</span>
+            <span>Recent Announcements ({inboxItems.length})</span>
           </span>
 
-          {isSubscribed && (
-            <button
-              onClick={handleSendTestNotification}
-              className="text-[11px] font-bold text-[#0E6875] hover:underline flex items-center gap-1.5 cursor-pointer"
-            >
-              <i className="fa-solid fa-paper-plane text-xs"></i>
-              <span>Test Push Alert</span>
-            </button>
-          )}
+          <div className="flex items-center gap-3">
+            {isSubscribed && (
+              <button
+                onClick={handleSendTestNotification}
+                className="text-[11px] font-bold text-[#0E6875] hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <i className="fa-solid fa-paper-plane text-[10px]"></i>
+                <span>Test Alert</span>
+              </button>
+            )}
+
+            {inboxItems.length > 0 && (
+              <button
+                onClick={() => notificationStorage.clearAll()}
+                className="text-[11px] font-bold text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
+                title="Clear all notifications"
+              >
+                Clear all
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Notification Feed List */}
-        <div className="space-y-2.5 max-h-48 overflow-y-auto pr-1 menu-scrollbar" data-lenis-prevent>
-          {inboxItems.map((item) => (
-            <div
-              key={item.id}
-              className="p-3.5 rounded-2xl border border-gray-100 hover:border-[#0E6875]/30 bg-white hover:bg-teal-50/30 transition-all space-y-1 group"
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-extrabold text-xs text-gray-900 group-hover:text-[#0E6875] transition-colors">
-                  {item.title}
-                </span>
-                <span className="text-[10px] font-bold text-gray-400">{item.date}</span>
-              </div>
-              <p className="text-[11px] text-gray-600 font-medium leading-relaxed">{item.body}</p>
+        <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1 menu-scrollbar" data-lenis-prevent>
+          {inboxItems.length === 0 ? (
+            <div className="text-center py-8 text-gray-400 text-xs font-semibold space-y-1">
+              <i className="fa-solid fa-circle-check text-2xl text-teal-400 block mb-1"></i>
+              <span>You're all caught up! No recent alerts.</span>
             </div>
-          ))}
+          ) : (
+            inboxItems.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => {
+                  notificationStorage.markAsRead(item.id);
+                  onClose();
+                  if (item.url) {
+                    router.push(item.url);
+                  } else {
+                    router.push("/notifications");
+                  }
+                }}
+                className={`p-3.5 rounded-2xl border transition-all space-y-1 group cursor-pointer relative ${
+                  item.isRead
+                    ? "bg-white border-gray-100 hover:border-[#0E6875]/40 hover:bg-teal-50/20"
+                    : "bg-[#FAF0E9]/60 border-[#EDA296]/50 hover:border-[#0E6875] hover:bg-[#FAF0E9]"
+                }`}
+              >
+                <div className="flex items-center justify-between pr-6">
+                  <span className="font-extrabold text-xs text-gray-900 group-hover:text-[#0E6875] transition-colors truncate">
+                    {item.title}
+                  </span>
+                  <span className="text-[10px] font-bold text-gray-400 shrink-0 ml-2">
+                    {item.date}
+                  </span>
+                </div>
+                <p className="text-[11px] text-gray-600 font-medium leading-relaxed line-clamp-2">
+                  {item.body}
+                </p>
+
+                {/* Individual Delete Button */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    notificationStorage.deleteNotification(item.id);
+                  }}
+                  className="absolute top-3 right-3 w-6 h-6 rounded-lg bg-transparent hover:bg-red-100 text-gray-400 hover:text-red-600 flex items-center justify-center transition-all opacity-70 group-hover:opacity-100 cursor-pointer"
+                  title="Delete this notification"
+                >
+                  <i className="fa-solid fa-xmark text-xs"></i>
+                </button>
+              </div>
+            ))
+          )}
         </div>
 
-        {/* Footer */}
-        <div className="pt-1 text-center">
+        {/* Footer Link to Dedicated Page */}
+        <div className="pt-2 border-t border-gray-100 flex items-center justify-between gap-3">
+          <Link
+            href="/notifications"
+            onClick={onClose}
+            className="text-xs font-black text-[#0E6875] hover:text-[#0B4E58] transition-colors flex items-center gap-1.5 py-2 group cursor-pointer"
+          >
+            <span>Open Full Notification Page</span>
+            <i className="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+          </Link>
+
           <button
             onClick={onClose}
-            className="w-full bg-[#0E6875] hover:bg-[#0B4E58] text-white font-extrabold text-xs py-3 rounded-2xl shadow-md transition-all cursor-pointer active:scale-98"
+            className="bg-[#0E6875] hover:bg-[#0B4E58] text-white font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-md transition-all cursor-pointer active:scale-98"
           >
             Done
           </button>
@@ -347,4 +409,5 @@ export default function NotificationCenterModal({ isOpen, onClose }: Notificatio
     </div>
   );
 }
+
 

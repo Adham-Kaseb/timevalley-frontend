@@ -21,7 +21,7 @@ class RealtimeSocketClient {
     }
 
     try {
-      const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+      const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
       // Convert http(s) to ws(s)
       let wsUrl = rawApiUrl.replace(/^http/, "ws").replace(/\/api\/?$/, "");
       wsUrl += "/socket.io/?EIO=4&transport=websocket";
