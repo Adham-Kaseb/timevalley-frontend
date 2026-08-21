@@ -5,6 +5,8 @@ import Link from "next/link";
 import Breadcrumbs from "@/components/common/Breadcrumbs";
 import { useAuth } from "@/context/AuthContext";
 import DiplomaPurchaseModal from "@/components/diploma/DiplomaPurchaseModal";
+import DiplomaPlayer, { NextLessonInfo } from "@/components/diploma/DiplomaPlayer";
+import { useVideoProgress } from "@/hooks/useVideoProgress";
 import apiClient from "@/lib/axios";
 import { getSocket } from "@/services/socket";
 import { claimCertificate } from "@/services/certificate";
@@ -428,6 +430,53 @@ export default function DiplomasPage() {
     : (selectedModuleIdx === 0 ? false : !hasPurchased);
   const currentLesson = currentModule?.lessons?.[activeLessonIdx] || currentModule?.lessons?.[0];
 
+  // Auto-play Next Lesson resolution
+  const currentLessonsList = currentModule?.lessons || [];
+  let nextLessonInfo: NextLessonInfo | null = null;
+  if (activeLessonIdx < currentLessonsList.length - 1) {
+    const nextL = currentLessonsList[activeLessonIdx + 1];
+    nextLessonInfo = {
+      id: nextL.id,
+      lessonNumber: nextL.lessonNumber,
+      title: nextL.title,
+      duration: nextL.duration,
+    };
+  } else if (selectedModuleIdx < curriculumModules.length - 1) {
+    const nextMod = curriculumModules[selectedModuleIdx + 1];
+    const isNextModLocked = typeof (nextMod as any)?.isLocked === "boolean"
+      ? (nextMod as any).isLocked
+      : (selectedModuleIdx + 1 === 0 ? false : !hasPurchased);
+    if (!isNextModLocked && nextMod.lessons && nextMod.lessons.length > 0) {
+      const nextL = nextMod.lessons[0];
+      nextLessonInfo = {
+        id: nextL.id,
+        lessonNumber: nextL.lessonNumber,
+        title: nextL.title,
+        duration: nextL.duration,
+      };
+    }
+  }
+
+  const handleNextLessonAdvancement = () => {
+    if (activeLessonIdx < currentLessonsList.length - 1) {
+      setActiveLessonIdx((prev) => prev + 1);
+    } else if (selectedModuleIdx < curriculumModules.length - 1) {
+      setSelectedModuleIdx((prev) => prev + 1);
+      setActiveLessonIdx(0);
+    }
+  };
+
+  // Video progress syncing hook
+  const { handleTimeUpdate, handleManualComplete } = useVideoProgress({
+    lessonId: currentLesson?.id,
+    isLoggedIn: !!userLoggedIn,
+    onAutoCompleted: (lId) => {
+      if (!completedLessons.includes(lId)) {
+        toggleLessonCompleted(lId);
+      }
+    },
+  });
+
   const handleUnlockClick = () => {
     if (!isLoggedIn) {
       openEnrollModal("signin");
@@ -458,6 +507,7 @@ export default function DiplomasPage() {
 
   const toggleLessonCompleted = (id: string) => {
     const isAdding = !completedLessons.includes(id);
+    handleManualComplete(id, isAdding);
     setCompletedLessons((prev) => {
       const updated = isAdding ? [...prev, id] : prev.filter((lId) => lId !== id);
       if (typeof window !== "undefined") {
@@ -1041,15 +1091,26 @@ export default function DiplomasPage() {
                   </div>
                 ) : (
                   <div key={currentLesson.id} className="space-y-6 animate-in fade-in slide-in-from-right-6 duration-300">
-                    {/* Video Player */}
-                    <div className="relative rounded-2xl overflow-hidden shadow-lg bg-black aspect-video">
-                      <video
-                        key={currentLesson.videoUrl}
-                        src={currentLesson.videoUrl}
-                        controls
-                        className="w-full h-full object-cover"
+                    {/* Luxury Custom Video Player */}
+                    {currentLesson && (
+                      <DiplomaPlayer
+                        key={currentLesson.id}
+                        lessonId={currentLesson.id}
+                        videoUrl={currentLesson.videoUrl}
+                        title={`Module ${currentModule.moduleNumber || selectedModuleIdx}: ${currentLesson.title}`}
+                        studentName={user?.name || "TimeValley Student"}
+                        studentEmail={user?.email || ""}
+                        studentId={user?.studentId || user?.id || ""}
+                        nextLesson={nextLessonInfo}
+                        onTimeUpdate={handleTimeUpdate}
+                        onCompleted={() => {
+                          if (!completedLessons.includes(currentLesson.id)) {
+                            toggleLessonCompleted(currentLesson.id);
+                          }
+                        }}
+                        onNextLesson={handleNextLessonAdvancement}
                       />
-                    </div>
+                    )}
 
                     <div>
                       <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Tajawal } from "next/font/google";
+import { Outfit } from "next/font/google";
 import "./globals.css";
 import ConditionalLayout from "@/components/layout/ConditionalLayout";
 import SmoothScrollProvider from "@/components/common/SmoothScrollProvider";
@@ -10,10 +10,10 @@ import EnrollmentModal from "@/components/auth/EnrollmentModal";
 
 import Script from "next/script";
 
-const tajawal = Tajawal({
-  subsets: ["latin", "arabic"],
-  weight: ["300", "400", "500", "700", "800", "900"],
-  variable: "--font-tajawal",
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-outfit",
   display: "swap",
 });
 
@@ -44,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" dir="ltr" data-scroll-behavior="smooth" className={tajawal.variable} suppressHydrationWarning>
+    <html lang="en" dir="ltr" data-scroll-behavior="smooth" className={outfit.variable} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/icons/icon-192x192.png" type="image/png" sizes="192x192" />
         <link rel="shortcut icon" href="/icons/icon-192x192.png" type="image/png" />

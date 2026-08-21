@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&display=swap');
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
 @import "tailwindcss";
 
@@ -25,7 +25,7 @@
   html {
     font-size: 100%; /* Default mobile portrait baseline (16px) */
     direction: ltr;
-    font-family: 'Tajawal', var(--font-tajawal), sans-serif;
+    font-family: 'Outfit', var(--font-outfit), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
   @media (min-width: 480px) {
@@ -43,7 +43,7 @@
   body {
     background-color: var(--bg-canvas);
     color: var(--color-text-main);
-    font-family: 'Tajawal', var(--font-tajawal), sans-serif;
+    font-family: 'Outfit', var(--font-outfit), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 1rem;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -51,7 +51,7 @@
   }
 
   *, button, input, select, textarea {
-    font-family: 'Tajawal', var(--font-tajawal), sans-serif;
+    font-family: 'Outfit', var(--font-outfit), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 }
 

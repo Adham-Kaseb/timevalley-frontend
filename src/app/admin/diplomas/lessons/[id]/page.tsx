@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import adminService, { AdminLessonPayload } from "@/services/admin";
+import DiplomaPlayer from "@/components/diploma/DiplomaPlayer";
 
 interface MaterialItem {
   name: string;
@@ -312,7 +313,7 @@ export default function LessonBuilderPage() {
                   max="100"
                   value={lessonNumber}
                   onChange={(e) => setLessonNumber(parseInt(e.target.value) || 1)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs font-extrabold focus:outline-none focus:border-[#0E6875] focus:bg-white transition-all"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs font-extrabold outline-none focus:ring-2 focus:ring-[#0E6875] transition-all"
                   required
                 />
               </div>
@@ -326,7 +327,7 @@ export default function LessonBuilderPage() {
                   placeholder="e.g. 25 Mins"
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs font-extrabold focus:outline-none focus:border-[#0E6875] focus:bg-white transition-all"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs font-extrabold outline-none focus:ring-2 focus:ring-[#0E6875] transition-all"
                   required
                 />
               </div>
@@ -342,7 +343,7 @@ export default function LessonBuilderPage() {
                 placeholder="e.g. Lesson 1: INTRO - Core Step 1"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs font-extrabold focus:outline-none focus:border-[#0E6875] focus:bg-white transition-all"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs font-extrabold outline-none focus:ring-2 focus:ring-[#0E6875] transition-all"
                 required
               />
             </div>
@@ -359,7 +360,7 @@ export default function LessonBuilderPage() {
                   placeholder="https://commondatastorage.googleapis.com/..."
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs font-mono font-medium focus:outline-none focus:border-[#0E6875] focus:bg-white transition-all pr-10"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs font-mono font-medium outline-none focus:ring-2 focus:ring-[#0E6875] transition-all pr-10"
                   required
                 />
                 <i className="fa-solid fa-link absolute right-3 top-3.5 text-gray-400 text-xs"></i>
@@ -376,7 +377,7 @@ export default function LessonBuilderPage() {
                 placeholder="Applied breakdown of intro step 1 with real-world case studies and templates..."
                 value={desc}
                 onChange={(e) => setDesc(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-xs font-medium focus:outline-none focus:border-[#0E6875] focus:bg-white transition-all leading-relaxed"
+                className="w-full bg-gray-50 border border-gray-200 rounded-2xl p-4 text-xs font-medium outline-none focus:ring-2 focus:ring-[#0E6875] transition-all leading-relaxed"
                 required
               />
             </div>
@@ -454,7 +455,7 @@ export default function LessonBuilderPage() {
                       placeholder="e.g. INTRO Step 1 Playbook (PDF)"
                       value={matName}
                       onChange={(e) => setMatName(e.target.value)}
-                      className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-[#0E6875]"
+                      className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-[#0E6875]"
                       required
                     />
                   </div>
@@ -464,7 +465,7 @@ export default function LessonBuilderPage() {
                     <select
                       value={matType}
                       onChange={(e) => setMatType(e.target.value)}
-                      className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-[#0E6875]"
+                      className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-[#0E6875]"
                     >
                       <option value="pdf">PDF Document (.pdf)</option>
                       <option value="excel">Excel Sheet (.xlsx)</option>
@@ -482,7 +483,7 @@ export default function LessonBuilderPage() {
                       placeholder="https://domain.com/asset.pdf"
                       value={matUrl}
                       onChange={(e) => setMatUrl(e.target.value)}
-                      className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono font-medium focus:outline-none focus:border-[#0E6875]"
+                      className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-mono font-medium outline-none focus:ring-2 focus:ring-[#0E6875]"
                     />
                   </div>
 
@@ -493,7 +494,7 @@ export default function LessonBuilderPage() {
                       placeholder="e.g. 1.8 MB"
                       value={matSize}
                       onChange={(e) => setMatSize(e.target.value)}
-                      className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-[#0E6875]"
+                      className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-[#0E6875]"
                     />
                   </div>
                 </div>
@@ -582,11 +583,14 @@ export default function LessonBuilderPage() {
 
             {/* VIDEO PLAYER PREVIEW */}
             <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black aspect-video border border-white/10">
-              <video
+              <DiplomaPlayer
                 key={videoUrl}
-                src={videoUrl}
-                controls
-                className="w-full h-full object-cover"
+                lessonId={lessonId || "preview"}
+                videoUrl={videoUrl}
+                title={title || "Lesson Preview"}
+                studentName="Admin Preview Mode"
+                studentEmail="admin@timevalley.com"
+                studentId="PREVIEW-001"
               />
             </div>
 

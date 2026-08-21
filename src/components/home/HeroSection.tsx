@@ -12,7 +12,6 @@ export default function HeroSection() {
           <div className="lg:col-span-7 space-y-6">
             {/* Pill Badge */}
             <div className="inline-flex items-center gap-2 bg-white border border-gray-200 px-4 py-1.5 rounded-full text-xs font-bold text-gray-700 shadow-sm">
-              <span>📈</span>
               <span>Business Consulting & Startup Agency</span>
             </div>
 
